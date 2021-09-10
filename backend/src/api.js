@@ -19,7 +19,8 @@ function requestLogger(req, res, next) {
   });
   next();
 }
-
+//docker exec -it   todolist-react_api_1 nc -nv localhost:3001 ok
+app.listen(3010);
 app.use(requestLogger);
 app.use(require("cors")());
 

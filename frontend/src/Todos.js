@@ -56,7 +56,7 @@ function Todos() {
   console.log("process.env" + JSON.stringify(process.env))
   const pageLimit = 20;
   useEffect(() => {
-    fetch("http://localhost:3001/getData?count=" + 0 + "&limit=" + pageLimit)
+    fetch("http://localhost:3010/getData?count=" + 0 + "&limit=" + pageLimit)
       .then((response) => response.json())
       .then((todos) => {
         setTodos(todos);
@@ -64,7 +64,7 @@ function Todos() {
   }, [setTodos]);
 
   function addTodo(text) {
-    fetch("http://localhost:3001/", {
+    fetch("http://localhost:3010/", {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function Todos() {
   }
 
   function toggleTodoCompleted(id) {
-    fetch(`http://localhost:3001/${id}`, {
+    fetch(`http://localhost:3010/${id}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -104,7 +104,7 @@ function Todos() {
   }
 
   function deleteTodo(id) {
-    fetch(`http://localhost:3001/${id}`, {
+    fetch(`http://localhost:3010/${id}`, {
       method: "DELETE",
     }).then(() => setTodos(todos.filter((todo) => todo.id !== id)));
   }
@@ -133,11 +133,11 @@ function Todos() {
       //     setHasMore(false)
       //   }
       // });
-    }, 1000);
+    }, 100);
   }
 
   function fetchData(page, limit, searchName, searchDate){
-    fetch("http://localhost:3001/getData?count=" + page + "&limit=" + limit + "&searchName=" + searchName + "&searchDate = " + searchDate)
+    fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit + "&searchName=" + searchName + "&searchDate = " + searchDate)
       .then((response) => response.json())
       .then((todoList) => {
         if(todoList.length > 0){

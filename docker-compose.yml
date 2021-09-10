@@ -9,7 +9,7 @@ services:
       - ./frontend/public:/frontend/public:cached,ro
       - ./frontend/src:/frontend/src:cached,ro
     ports:
-      - "3000:3000"
+      - "3111:3000"
     depends_on: 
       - api
     # env_file: 
@@ -27,7 +27,7 @@ services:
       - ./backend/bin:/backend/bin:cached,ro
       - ./backend/src:/backend/src:cached,ro
     ports:
-      - "3001:3001"
+      - "3010:3010"
     depends_on:
       - database
     environment:
@@ -39,6 +39,6 @@ services:
     image: mongo:4.4
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "1234"
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: "root"
+    #   MONGO_INITDB_ROOT_PASSWORD: "1234"

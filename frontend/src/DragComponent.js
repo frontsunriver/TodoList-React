@@ -1,14 +1,10 @@
 import React from 'react';
 import {
-    Container,
     Typography,
     Button,
     Icon,
-    Paper,
     Box,
-    TextField,
     Checkbox,
-    Form,
   } from "@material-ui/core";
 
 import { Draggable } from 'react-beautiful-dnd';

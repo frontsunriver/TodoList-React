@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
+  Card,
   Container,
   Typography,
   Button,
@@ -9,8 +10,9 @@ import {
   Box,
   TextField,
   Checkbox,
-  Form,
 } from "@material-ui/core";
+
+import { Form, Col, Row } from 'react-bootstrap';
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -47,6 +49,9 @@ function Todos() {
   const [newTodoText, setNewTodoText] = useState({});
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
+  const [search, setSearch] = useState(false)
+  const [searchPress, setSearchPress] = useState(false);
+  const searchName = useRef();
 
   const pageLimit = 20;
   useEffect(() => {
@@ -113,18 +118,67 @@ function Todos() {
 
   async function loadFunc(page, limit=20){
     setPage(page+1);
+    setSearchPress(false);
     setTimeout(() => {
-      fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
+      var searchKey = searchName.current.value
+      fetchData(page + 1, limit, searchKey, '123');
+      // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
+      // .then((response) => response.json())
+      // .then((todoList) => {
+      //   if(todoList.length > 0){
+      //     const newTodo = todoList;
+      //     setTodos((todos) => [...todos, ...newTodo])
+      //   }else{
+      //     setHasMore(false)
+      //   }
+      // });
+    }, 1000);
+  }
+
+  function fetchData(page, limit, searchName, searchDate){
+    fetch("http://localhost:3001/getData?count=" + page + "&limit=" + limit + "&searchName=" + searchName + "&searchDate = " + searchDate)
       .then((response) => response.json())
       .then((todoList) => {
         if(todoList.length > 0){
           const newTodo = todoList;
-          setTodos((todos) => [...todos, ...newTodo])
+          if(search){
+            console.log("--------------------search ture")
+            setTodos(newTodo)
+          }else if(searchPress){
+            setTodos(newTodo)
+          }else{
+            console.log("----------------------------------------------------search false")
+            setTodos((todos) => [...todos, ...newTodo])
+          }
         }else{
           setHasMore(false)
         }
       });
-    }, 1000);
+  }
+
+  async function handleSearch(e){
+    e.preventDefault();
+    var searchKey = searchName.current.value
+    setSearchPress(true)
+    if(searchKey == ''){
+      console.log("search Key false")
+      setSearch(false)
+    }else{
+      console.log("search Key true")
+      setSearch(true)
+    }
+    setHasMore(true)
+    fetchData(0, pageLimit, searchKey, '123');
+      // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
+      // .then((response) => response.json())
+      // .then((todoList) => {
+      //   if(todoList.length > 0){
+      //     const newTodo = todoList;
+      //     setTodos((todos) => [...todos, ...newTodo])
+      //   }else{
+      //     setHasMore(false)
+      //   }
+      // });
   }
 
   return (
@@ -139,6 +193,15 @@ function Todos() {
         <Typography variant="h3" component="h1" gutterBottom>
           Todos
         </Typography>
+        <Paper className={classes.addTodoContainer}>
+          <Form onSubmit={handleSearch}>
+            <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
+              <Col sm="3">
+                <Form.Control type="text" ref={searchName}/>
+              </Col>
+            </Form.Group>
+          </Form>
+        </Paper>
         <Paper className={classes.addTodoContainer}>
           <form className={classes.form}>
             <Box display="flex" flexDirection="row">

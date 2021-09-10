@@ -45,6 +45,8 @@ function Todos() {
   const [todos, setTodos] = useState({});
   const [newTodoText, setNewTodoText] = useState({});
   const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+
   const pageLimit = 20;
   useEffect(() => {
     fetch("http://localhost:3001/getData?count=" + 0 + "&limit=" + pageLimit)
@@ -67,7 +69,7 @@ function Todos() {
         return response.json();
       })
       .then((todo) => {
-        setTodos({...todos, todo});
+        setTodos([...todos, todo]);
         setNewTodoText({ todoText: "", dueDate: "" });
       }).catch((error) => {
       });
@@ -105,19 +107,19 @@ function Todos() {
     const items = Array.from(todos);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-
     setTodos(items);
   }
 
-  function loadFunc(page){
+  async function loadFunc(page, limit=20){
     console.log(page);
+    setPage(page+1);
     setTimeout(() => {
-      fetch("http://localhost:3001/getData?count=" + page + "&limit=" + pageLimit)
+      fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
       .then((response) => response.json())
       .then((todoList) => {
         if(todoList.length > 0){
-          const newTodo = {...todos, todoList}
-          // setTodos(newTodo)
+          const newTodo = todoList;
+          setTodos((todos) => [...todos, ...newTodo]);
         }
       });
     }, 1500);
@@ -125,9 +127,9 @@ function Todos() {
 
   return (
     <InfiniteScroll
-      dataLength={pageLimit}
-      next={loadFunc}
-      hasMore={hasMore}
+      dataLength={1000}
+      next={() => loadFunc(page, pageLimit)}
+      hasMore={true}
       loader={<h3> Loading...</h3>}
       endMessage={<h4>Nothing more to show</h4>}
     >

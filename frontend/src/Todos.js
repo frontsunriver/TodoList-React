@@ -14,6 +14,7 @@ import {
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import DragComponent from "./DragComponent";
 
 const useStyles = makeStyles({
   addTodoContainer: { padding: 10 },
@@ -111,7 +112,6 @@ function Todos() {
   }
 
   async function loadFunc(page, limit=20){
-    console.log(page);
     setPage(page+1);
     setTimeout(() => {
       fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
@@ -119,7 +119,7 @@ function Todos() {
       .then((todoList) => {
         if(todoList.length > 0){
           const newTodo = todoList;
-          setTodos((todos) => [...todos, ...newTodo]);
+          setTodos((todos) => [...todos, ...newTodo])
         }else{
           setHasMore(false)
         }
@@ -196,38 +196,13 @@ function Todos() {
                   <div>
                     {todos.map((elem, index) => {
                       return(
-                        <Draggable key={elem.id} draggableId={elem.id} index={index}>
-                          {(provided) => (
-                            <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                              <Box
-                                display="flex"
-                                flexDirection="row"
-                                alignItems="center"
-                                className={classes.todoContainer}
-                              >
-                                <Checkbox
-                                  checked={false}
-                                  onChange={() => toggleTodoCompleted(elem.id)}
-                                ></Checkbox>
-                                <Box flexGrow={1}>
-                                  <Typography
-                                    className={false ? classeshook.todoTextCompleted : ""}
-                                    variant="body1"
-                                  >
-                                    {elem.todoText}
-                                  </Typography>
-                                </Box>
-                                <Button
-                                  className={classes.deleteTodo}
-                                  startIcon={<Icon>delete</Icon>}
-                                  onClick={() => deleteTodo(elem.id)}
-                                >
-                                  Delete
-                                </Button>
-                              </Box>
-                            </li>
-                          )}
-                        </Draggable>
+                        <DragComponent 
+                          elem={elem} 
+                          index={index} 
+                          provided={provided} 
+                          classes={classes} 
+                          deleteTodo={deleteTodo} 
+                          toggleTodoCompleted={toggleTodoCompleted}/>
                       )
                     })}
                   </div>

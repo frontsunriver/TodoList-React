@@ -42,7 +42,7 @@ const useStyles = makeStyles({
 
 function Todos() {
   const classes = useStyles();
-  const [todos, setTodos] = useState({});
+  const [todos, setTodos] = useState([]);
   const [newTodoText, setNewTodoText] = useState({});
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
@@ -122,12 +122,12 @@ function Todos() {
           setTodos((todos) => [...todos, ...newTodo]);
         }
       });
-    }, 1500);
+    }, 1000);
   }
 
   return (
     <InfiniteScroll
-      dataLength={1000}
+      dataLength={todos.length}
       next={() => loadFunc(page, pageLimit)}
       hasMore={true}
       loader={<h3> Loading...</h3>}

@@ -120,6 +120,8 @@ function Todos() {
         if(todoList.length > 0){
           const newTodo = todoList;
           setTodos((todos) => [...todos, ...newTodo]);
+        }else{
+          setHasMore(false)
         }
       });
     }, 1000);
@@ -129,9 +131,9 @@ function Todos() {
     <InfiniteScroll
       dataLength={todos.length}
       next={() => loadFunc(page, pageLimit)}
-      hasMore={true}
-      loader={<h3> Loading...</h3>}
-      endMessage={<h4>Nothing more to show</h4>}
+      hasMore={hasMore}
+      loader={<Container maxWidth="md"><h3> Loading...</h3></Container>}
+      endMessage={<Container maxWidth="md"><h4>Nothing more to show</h4></Container>}
     >
       <Container maxWidth="md">
         <Typography variant="h3" component="h1" gutterBottom>

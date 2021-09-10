@@ -53,6 +53,7 @@ function Todos() {
   const [searchPress, setSearchPress] = useState(false);
   const searchName = useRef();
 
+  console.log("process.env" + JSON.stringify(process.env))
   const pageLimit = 20;
   useEffect(() => {
     fetch("http://localhost:3001/getData?count=" + 0 + "&limit=" + pageLimit)

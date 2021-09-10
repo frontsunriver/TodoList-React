@@ -10,8 +10,15 @@ services:
       - ./frontend/src:/frontend/src:cached,ro
     ports:
       - "3000:3000"
+    depends_on: 
+      - api
+    # env_file: 
+    #   - ./frontend/.env
+    environment:
+      - REACT_APP_SAMPLE_ID=${REACT_APP_SAMPLE_ID}
 
   api:
+    hostname: api-host
     build: backend
     depends_on:
       - database
@@ -21,9 +28,12 @@ services:
       - ./backend/src:/backend/src:cached,ro
     ports:
       - "3001:3001"
+    depends_on:
+      - database
     environment:
       DATABASE_USER: "root"
       DATABASE_PASSWORD: "1234"
+      DATABASE_URL : database
 
   database:
     image: mongo:4.4

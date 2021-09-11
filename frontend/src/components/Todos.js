@@ -54,8 +54,6 @@ function Todos() {
   const [newTodoText, setNewTodoText] = useState({});
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
-  const [search, setSearch] = useState(false)
-  const [searchPress, setSearchPress] = useState(false);
   const searchName = useRef();
 
   console.log("process.env" + JSON.stringify(process.env))
@@ -70,7 +68,7 @@ function Todos() {
  
 　useEffect(()=>{
        fetchDataInit()
-     },[setTodos]
+     },[]
   )
   function addTodo(text) {
    
@@ -90,9 +88,9 @@ function Todos() {
         return response.json();
       })
       .then((todo) => {
-        todo.filtered = true
+        todo.filteredStatus = true
         setTodos([...todos, todo]);
-        setNewTodoText({ todoText: "", dueDate: "",filtered: true });
+        //setNewTodoText({ todoText: "", dueDate: "",filtered: true });
       }).catch((error) => {
       });
   }
@@ -135,7 +133,7 @@ function Todos() {
   async function loadFunc(page=0, limit=pageLimit){
     //alert("loadFunc")
     setPage(page+1);
-    setSearchPress(false);
+    //setSearchPress(false);
     setTimeout(() =>{
       //let searchKey = searchName.current.value
       fetchData(page + 1, limit ) ;//, searchKey, '123');
@@ -145,10 +143,17 @@ function Todos() {
   function fetchDataInit(page, limit,){
     fetch("http://localhost:3010/getData?count=" + 0 )
     .then((response) => response.json())
-    .then((todos) => {
+    .then((_todos) => {
         // when no data immediately finish
-        if(todos.length ===0 ) {setHasMore(false)}
-        setTodos((todos))
+        if(_todos.length ===0 ) {
+          setHasMore(false)
+          return 
+        }
+        _todos.map(t => (t.filteredStatus = true))
+        //alert("todos init " +JSON.stringify(todos)+todos.length+"]")
+        console.log(JSON.stringify(_todos))
+        setTodos(_todos);
+       // setTodos((todos))
     })
   }
   function fetchData(page, limit) { //, searchName, searchDate){
@@ -168,32 +173,31 @@ function Todos() {
       );
   }
 
-  function filterTaskUntilToday(event){
-    alert("filterTaskUntilToday")
-    alert(event.target.checked)
+  async function filterTaskUntilToday(event){
     setFilteredTodosFlag(event.target.checked)
-    //if((event.target.checked)){
-        todos.map(
-            (elem) =>  {
-            let dueDate = new Date(Date.parse(elem.dueDate))
-            let nowDate = new Date(Date.now())
+    if((event.target.checked)){
+      //alert("checkbox is true")
+      todos.map(
+          (elem) =>  {
+          let dueDate = new Date(Date.parse(elem.dueDate))
+          let nowDate = new Date(Date.now())
 
-            let dueBoolean = (dueDate.getFullYear() <= nowDate.getFullYear())
-            && (dueDate.getMonth() <= nowDate.getMonth())
-            && (dueDate.getDate() <= nowDate.getDate())
-            
-            if(!dueBoolean){
-              elem.filtered  = false
-            }else{
-              elem.filtered  = true
-            }
-          } 
-        )
-        alert(JSON.stringify(todos));
-
-       //}
-     
-    //alert("filterTaskUntilToday")
+          let dueBoolean = (dueDate.getFullYear() <= nowDate.getFullYear())
+          && (dueDate.getMonth() <= nowDate.getMonth())
+          && (dueDate.getDate() <= nowDate.getDate())
+          
+          if(!dueBoolean){
+            elem.filteredStatus  = false
+          }else{
+            elem.filteredStatus  = true
+          }
+        } 
+      )
+    } else{
+      todos.map(elem => (elem.filteredStatus = true))
+      setTodos(todos)
+    }
+      
   }
 
   async function handleSearch(e){
@@ -231,17 +235,8 @@ function Todos() {
     >
       <Container maxWidth="md">
         <Typography variant="h3" component="h1" gutterBottom>
-          Todosssssss
+          Todos
         </Typography>
-        {/* <Paper className={classes.addTodoContainer}>
-          <Form onSubmit={handleSearch}>
-            <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
-              <Col sm="3">
-                <Form.Control type="text" ref={searchName}/>
-              </Col>
-            </Form.Group>
-          </Form>
-        </Paper> */}
         <Paper className={classes.addTodoContainer}>
           <form className={classes.form}>
             <Box display="flex">
@@ -311,9 +306,12 @@ function Todos() {
                 {todos.length > 0  &&(
                   <div>
                     {todos
-                      .filter(elem => (elem.filtered))
-                      .map((elem, index) => {
-                      alert("filtered=======" + JSON.stringify(elem));
+                     .filter(elem => 
+                       //console.log("filtered=======" +(elem.todoText)+":"+(elem.filteredStatus)+"過去だけ表示する");
+                        elem.filteredStatus
+                     )
+                     .map((elem, index) => {
+                      
                       return(
                         <DragComponent 
                           elem={elem} 
@@ -322,8 +320,10 @@ function Todos() {
                           classes={classes} 
                           deleteTodo={deleteTodo} 
                           toggleTodoCompleted={toggleTodoCompleted}/>
+                        // <div>{JSON.stringify(elem)}</div>
                       )
-                    })}
+                    })
+                    }
                   </div>
                 )}
                 </ul>
@@ -332,7 +332,7 @@ function Todos() {
             </Droppable>
           </DragDropContext>
       </Container>
-    </InfiniteScroll>
+     </InfiniteScroll>
   );
 }
 

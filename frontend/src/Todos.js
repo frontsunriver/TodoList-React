@@ -54,7 +54,7 @@ function Todos() {
   const searchName = useRef();
 
   console.log("process.env" + JSON.stringify(process.env))
-  const pageLimit = 20;
+  const pageLimit = 2;
   useEffect(() => {
     fetch("http://localhost:3010/getData?count=" + 0 + "&limit=" + pageLimit)
       .then((response) => response.json())
@@ -62,8 +62,10 @@ function Todos() {
         setTodos(todos);
       });
   }, [setTodos]);
+ 
 
   function addTodo(text) {
+    //alert("add ")
     fetch("http://localhost:3010/", {
       headers: {
         Accept: "application/json",
@@ -117,10 +119,11 @@ function Todos() {
     setTodos(items);
   }
 
-  async function loadFunc(page, limit=20){
+  async function loadFunc(page, limit){
+    alert("loadFunc")
     setPage(page+1);
     setSearchPress(false);
-    setTimeout(() => {
+    //setTimeout(() => {
       var searchKey = searchName.current.value
       fetchData(page + 1, limit, searchKey, '123');
       // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
@@ -133,10 +136,12 @@ function Todos() {
       //     setHasMore(false)
       //   }
       // });
-    }, 100);
+      // setHasMore(false);
+    //}, 100);
   }
 
   function fetchData(page, limit, searchName, searchDate){
+    alert("fetchData")
     fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit + "&searchName=" + searchName + "&searchDate = " + searchDate)
       .then((response) => response.json())
       .then((todoList) => {
@@ -154,7 +159,11 @@ function Todos() {
         }else{
           setHasMore(false)
         }
-      });
+      }).finally(()=>{
+        alert("finally");
+        setHasMore(false);
+      }
+      );
   }
 
   async function handleSearch(e){
@@ -205,10 +214,11 @@ function Todos() {
         </Paper>
         <Paper className={classes.addTodoContainer}>
           <form className={classes.form}>
-            <Box display="flex" flexDirection="row">
+            <Box display="flex">
               <Box flexGrow={2}>
+              
                 <TextField
-                  fullWidth
+                  //fullWidth
                   placeholder="task .."
                   name="todoText"
                   value={newTodoText.todoText}
@@ -225,9 +235,10 @@ function Todos() {
                   }
                 />
                 <TextField
-                  fullWidth
+                  //fullWidth
                   placeholder="due date .."
                   name="dueDate"
+                  type="date"
                   value={newTodoText.dueDate}
                   onKeyPress={(event) => {
                     if (event.key === "Enter") {

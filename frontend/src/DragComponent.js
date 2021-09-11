@@ -28,15 +28,17 @@ export default function DragComponent(props) {
                 className={classes.todoContainer}
                 >
                 <Checkbox
-                    checked={false}
+                    checked={elem.completed}
                     onChange={() => toggleTodoCompleted(elem.id)}
                 ></Checkbox>
                 <Box flexGrow={1}>
                     <Typography
-                    className={false ? classes.todoTextCompleted : ""}
+                    className={elem.completed ? classes.todoTextCompleted : ""}
                     variant="body1"
                     >
                     {elem.todoText}
+                    {":[dueDate]"}
+                    {elem.dueDate}
                     </Typography>
                 </Box>
                 <Button

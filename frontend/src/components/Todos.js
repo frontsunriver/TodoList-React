@@ -1,13 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  Card,
+  Checkbox,
   Container,
   Typography,
   Button,
   Icon,
   Paper,
   Box,
+  FormControlLabel,
   TextField
 } from "@material-ui/core";
 
@@ -37,6 +38,10 @@ const useStyles = makeStyles({
   todoTextCompleted: {
     textDecoration: "line-through",
   },
+  textField: {
+    marginLeft:  10,
+    marginRight: 10
+  },
   deleteTodo: {
     visibility: "hidden",
   },
@@ -45,6 +50,8 @@ const useStyles = makeStyles({
 function Todos() {
   const classes = useStyles();
   const [todos, setTodos] = useState([]);
+  const [filteredTodosFlag, setFilteredTodosFlag] = useState(false);
+  const [filteredTodos, setFilteredTodos] = useState([]);
   const [newTodoText, setNewTodoText] = useState({});
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
@@ -68,9 +75,9 @@ function Todos() {
   )
   function addTodo(text) {
    
-    if(!text.todoText){
-      alert("validation enter task")
-      //return
+    if(!text.todoText || !text.dueDate ){
+      alert("validation enter task and duedate")
+      return
     }
     fetch("http://localhost:3010/", {
       headers: {
@@ -130,8 +137,8 @@ function Todos() {
     setPage(page+1);
     setSearchPress(false);
     setTimeout(() =>{
-      let searchKey = searchName.current.value
-      fetchData(page + 1, limit, searchKey, '123');
+      //let searchKey = searchName.current.value
+      fetchData(page + 1, limit ) ;//, searchKey, '123');
     },1000)
   }
 
@@ -144,7 +151,7 @@ function Todos() {
         setTodos((todos))
     })
   }
-  function fetchData(page, limit, searchName, searchDate){
+  function fetchData(page, limit) { //, searchName, searchDate){
    // alert("fetchData"+"page"+page+"limit"+limit)
     
     fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit )
@@ -159,6 +166,27 @@ function Todos() {
         setHasMore(false);
       }
       );
+  }
+
+  function filterTaskUntilToday(event){
+    //alert(event.target.checked)
+    setFilteredTodosFlag(event.target.checked)
+    if((event.target.checked)){
+      let filteredTodo = todos.filter(
+            (elem) =>  {
+            let dueDate = new Date(Date.parse(elem.dueDate))
+            let nowDate = new Date(Date.now())
+
+            let dueBoolean = (dueDate.getFullYear() <= nowDate.getFullYear())
+            && (dueDate.getMonth() <= nowDate.getMonth())
+            && (dueDate.getDate() <= nowDate.getDate())
+            return dueBoolean
+          } 
+        )
+        setFilteredTodos(filteredTodo)
+    }
+     
+    //alert("filterTaskUntilToday")
   }
 
   async function handleSearch(e){
@@ -198,7 +226,7 @@ function Todos() {
         <Typography variant="h3" component="h1" gutterBottom>
           Todos
         </Typography>
-        <Paper className={classes.addTodoContainer}>
+        {/* <Paper className={classes.addTodoContainer}>
           <Form onSubmit={handleSearch}>
             <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
               <Col sm="3">
@@ -206,7 +234,7 @@ function Todos() {
               </Col>
             </Form.Group>
           </Form>
-        </Paper>
+        </Paper> */}
         <Paper className={classes.addTodoContainer}>
           <form className={classes.form}>
             <Box display="flex">
@@ -214,6 +242,7 @@ function Todos() {
               
                 <TextField
                   //fullWidth
+                  className={classes.textField}
                   placeholder="task .."
                   name="todoText"
                   value={newTodoText.todoText}
@@ -229,8 +258,10 @@ function Todos() {
                     })
                   }
                 />
+                
                 <TextField
                   //fullWidth
+                  className={classes.textField}
                   placeholder="due date .."
                   name="dueDate"
                   type="date"
@@ -257,14 +288,39 @@ function Todos() {
               </Button>
             </Box>
           </form>
+          <FormControlLabel
+            control={
+             <Checkbox checked={filteredTodosFlag} onClick={filterTaskUntilToday} name="gilad" />
+            }
+             label="filter only tasks until today's due"
+          />
+         
+
         </Paper>
         <DragDropContext onDragEnd={handleOnDragEnd}>
           <Droppable droppableId="characters">
             {(provided) => (
               <ul className="characters" {...provided.droppableProps} ref={provided.innerRef}>
-                {todos.length > 0 && (
+                {/* {todos.length > 0 && !filteredTodosFlag &&  (
                   <div>
-                    {todos.map((elem, index) => {
+                    {todos
+                      .map((elem, index) => {
+                      return(
+                        <DragComponent 
+                          elem={elem} 
+                          index={index} 
+                          provided={provided} 
+                          classes={classes} 
+                          deleteTodo={deleteTodo} 
+                          toggleTodoCompleted={toggleTodoCompleted}/>
+                      )
+                    })}
+                  </div>
+                )} */}
+                {todos.length > 0 && filteredTodosFlag &&(
+                  <div>
+                    {filteredTodos
+                      .map((elem, index) => {
                       return(
                         <DragComponent 
                           elem={elem} 

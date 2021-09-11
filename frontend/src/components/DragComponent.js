@@ -1,9 +1,6 @@
 import React from 'react';
 import {
-    Typography,
     Button,
-    Icon,
-    Box,
     Checkbox,
     TableHead,
     TableRow,
@@ -20,13 +17,16 @@ export default function DragComponent(props) {
         props.deleteTodo(id)
     }
     const toggleTodoCompleted = (id) => {
-        //alert("toggle")
+        alert("toggle")
+        alert(id)
         props.toggleTodoCompleted(id)
     }
     return(
         <Draggable key={elem.id} draggableId={elem.id} index={index}>
-            {(provided) => (
-            <Table ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+            {(provided) => {
+
+            alert(JSON.stringify(elem),"elem");
+            return  <Table ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                   <TableHead>
                       <TableRow>
                         <TableCell>Status   </TableCell>
@@ -45,6 +45,7 @@ export default function DragComponent(props) {
                             <TableCell>
                                 <Checkbox
                                     checked={elem.completed}
+                                    name = "finish"
                                     onChange={() => toggleTodoCompleted(elem.id)}
                                 ></Checkbox>
                             </TableCell>
@@ -59,8 +60,8 @@ export default function DragComponent(props) {
                             </Button>
                     </TableBody>
                 
-            </Table>
-            )}
+            </Table> 
+              }}
         </Draggable>
     )
 }

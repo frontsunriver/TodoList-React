@@ -51,7 +51,6 @@ function Todos() {
   const classes = useStyles();
   const [todos, setTodos] = useState([]);
   const [filteredTodosFlag, setFilteredTodosFlag] = useState(false);
-  const [filteredTodos, setFilteredTodos] = useState([]);
   const [newTodoText, setNewTodoText] = useState({});
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
@@ -91,8 +90,9 @@ function Todos() {
         return response.json();
       })
       .then((todo) => {
+        todo.filtered = true
         setTodos([...todos, todo]);
-        setNewTodoText({ todoText: "", dueDate: "" });
+        setNewTodoText({ todoText: "", dueDate: "",filtered: true });
       }).catch((error) => {
       });
   }
@@ -169,10 +169,11 @@ function Todos() {
   }
 
   function filterTaskUntilToday(event){
-    //alert(event.target.checked)
+    alert("filterTaskUntilToday")
+    alert(event.target.checked)
     setFilteredTodosFlag(event.target.checked)
-    if((event.target.checked)){
-      let filteredTodo = todos.filter(
+    //if((event.target.checked)){
+        todos.map(
             (elem) =>  {
             let dueDate = new Date(Date.parse(elem.dueDate))
             let nowDate = new Date(Date.now())
@@ -180,11 +181,17 @@ function Todos() {
             let dueBoolean = (dueDate.getFullYear() <= nowDate.getFullYear())
             && (dueDate.getMonth() <= nowDate.getMonth())
             && (dueDate.getDate() <= nowDate.getDate())
-            return dueBoolean
+            
+            if(!dueBoolean){
+              elem.filtered  = false
+            }else{
+              elem.filtered  = true
+            }
           } 
         )
-        setFilteredTodos(filteredTodo)
-    }
+        alert(JSON.stringify(todos));
+
+       //}
      
     //alert("filterTaskUntilToday")
   }
@@ -224,7 +231,7 @@ function Todos() {
     >
       <Container maxWidth="md">
         <Typography variant="h3" component="h1" gutterBottom>
-          Todos
+          Todosssssss
         </Typography>
         {/* <Paper className={classes.addTodoContainer}>
           <Form onSubmit={handleSearch}>
@@ -301,26 +308,12 @@ function Todos() {
           <Droppable droppableId="characters">
             {(provided) => (
               <ul className="characters" {...provided.droppableProps} ref={provided.innerRef}>
-                {/* {todos.length > 0 && !filteredTodosFlag &&  (
+                {todos.length > 0  &&(
                   <div>
                     {todos
+                      .filter(elem => (elem.filtered))
                       .map((elem, index) => {
-                      return(
-                        <DragComponent 
-                          elem={elem} 
-                          index={index} 
-                          provided={provided} 
-                          classes={classes} 
-                          deleteTodo={deleteTodo} 
-                          toggleTodoCompleted={toggleTodoCompleted}/>
-                      )
-                    })}
-                  </div>
-                )} */}
-                {todos.length > 0 && filteredTodosFlag &&(
-                  <div>
-                    {filteredTodos
-                      .map((elem, index) => {
+                      alert("filtered=======" + JSON.stringify(elem));
                       return(
                         <DragComponent 
                           elem={elem} 
@@ -333,8 +326,9 @@ function Todos() {
                     })}
                   </div>
                 )}
-              </ul>
-            )}
+                </ul>
+              )
+            }
             </Droppable>
           </DragDropContext>
       </Container>

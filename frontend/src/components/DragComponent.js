@@ -9,7 +9,7 @@ import {
     Table
   } from "@material-ui/core";
 
-import { Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 
 export default function DragComponent(props) {
     const { elem, index, provided, classes } = props;

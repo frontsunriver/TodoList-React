@@ -17,6 +17,7 @@ import { Form, Col, Row } from 'react-bootstrap';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import DragComponent from "./DragComponent";
+import TrelloLike    from "./TrelloLike";
 
 const useStyles = makeStyles({
   addTodoContainer: { padding: 10 },
@@ -57,7 +58,7 @@ function Todos() {
   const searchName = useRef();
 
   console.log("process.env" + JSON.stringify(process.env))
-  const pageLimit = 1;
+  const pageLimit = 10;
   // useEffect(() => {
   //   fetch("http://localhost:3010/getData?count=" + 0 + "&limit=" + pageLimit)
   //     .then((response) => response.json())
@@ -88,7 +89,7 @@ function Todos() {
         return response.json();
       })
       .then((todo) => {
-        todo.filteredStatus = true
+        todo.deadLineOver = false
         setTodos([...todos, todo]);
         //setNewTodoText({ todoText: "", dueDate: "",filtered: true });
       }).catch((error) => {
@@ -149,7 +150,7 @@ function Todos() {
           setHasMore(false)
           return 
         }
-        _todos.map(t => (t.filteredStatus = true))
+        _todos.map(t => (t.deadLineOver = false))
         //alert("todos init " +JSON.stringify(todos)+todos.length+"]")
         console.log(JSON.stringify(_todos))
         setTodos(_todos);
@@ -181,20 +182,25 @@ function Todos() {
           (elem) =>  {
           let dueDate = new Date(Date.parse(elem.dueDate))
           let nowDate = new Date(Date.now())
+          console.log("dueDate"+dueDate.getMonth())
+          console.log("nowDate"+nowDate.getMonth())
 
-          let dueBoolean = (dueDate.getFullYear() <= nowDate.getFullYear())
-          && (dueDate.getMonth() <= nowDate.getMonth())
-          && (dueDate.getDate() <= nowDate.getDate())
-          
-          if(!dueBoolean){
-            elem.filteredStatus  = false
+ 
+          let deadLineOver =  ( new Date(dueDate.getFullYear(),dueDate.getMonth(),dueDate.getDate()))<=( new Date(nowDate.getFullYear(),nowDate.getMonth(),nowDate.getDate()))
+          console.log("deadlineover"+deadLineOver)
+          // deadline is over or today
+          if(deadLineOver){
+            elem.deadLineOver  = true
+          // still have some time until dead line 
           }else{
-            elem.filteredStatus  = true
+            elem.deadLineOver  = false
           }
         } 
       )
+      console.log(JSON.stringify(todos))
     } else{
-      todos.map(elem => (elem.filteredStatus = true))
+      todos.map(elem => (elem.deadLineOver = true))
+      console.log(JSON.stringify(todos))
       setTodos(todos)
     }
       
@@ -226,11 +232,12 @@ function Todos() {
   }
 
   return (
+   
     <InfiniteScroll
       dataLength={todos.length}
       next={() => loadFunc(page, pageLimit)}
       hasMore={hasMore}
-      loader={<Container maxWidth="md"><h3> {todos.length} Loading...</h3></Container>}
+      loader={<Container maxWidth="md"><h3> {todos.length} Loading... Please scroll the bar </h3></Container>}
       endMessage={<Container maxWidth="md"><h4>Nothing more to show</h4></Container>}
     >
       <Container maxWidth="md">
@@ -307,8 +314,8 @@ function Todos() {
                   <div>
                     {todos
                      .filter(elem => 
-                       //console.log("filtered=======" +(elem.todoText)+":"+(elem.filteredStatus)+"過去だけ表示する");
-                        elem.filteredStatus
+                       //console.log("filtered=======" +(elem.todoText)+":"+(elem.deadLineOver)+"過去だけ表示する");
+                        elem.deadLineOver
                      )
                      .map((elem, index) => {
                       

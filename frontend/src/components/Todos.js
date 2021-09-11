@@ -8,8 +8,7 @@ import {
   Icon,
   Paper,
   Box,
-  TextField,
-  Checkbox,
+  TextField
 } from "@material-ui/core";
 
 import { Form, Col, Row } from 'react-bootstrap';
@@ -54,18 +53,25 @@ function Todos() {
   const searchName = useRef();
 
   console.log("process.env" + JSON.stringify(process.env))
-  const pageLimit = 2;
-  useEffect(() => {
-    fetch("http://localhost:3010/getData?count=" + 0 + "&limit=" + pageLimit)
-      .then((response) => response.json())
-      .then((todos) => {
-        setTodos(todos);
-      });
-  }, [setTodos]);
+  const pageLimit = 1;
+  // useEffect(() => {
+  //   fetch("http://localhost:3010/getData?count=" + 0 + "&limit=" + pageLimit)
+  //     .then((response) => response.json())
+  //     .then((todos) => {
+  //       setTodos(todos);
+  //     });
+  // }, [setTodos]);
  
-
+　useEffect(()=>{
+       fetchDataInit()
+     },[setTodos]
+  )
   function addTodo(text) {
-    //alert("add ")
+   
+    if(!text.todoText){
+      alert("validation enter task")
+      //return
+    }
     fetch("http://localhost:3010/", {
       headers: {
         Accept: "application/json",
@@ -119,48 +125,37 @@ function Todos() {
     setTodos(items);
   }
 
-  async function loadFunc(page, limit){
-    alert("loadFunc")
+  async function loadFunc(page=0, limit=pageLimit){
+    //alert("loadFunc")
     setPage(page+1);
     setSearchPress(false);
-    //setTimeout(() => {
-      var searchKey = searchName.current.value
+    setTimeout(() =>{
+      let searchKey = searchName.current.value
       fetchData(page + 1, limit, searchKey, '123');
-      // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
-      // .then((response) => response.json())
-      // .then((todoList) => {
-      //   if(todoList.length > 0){
-      //     const newTodo = todoList;
-      //     setTodos((todos) => [...todos, ...newTodo])
-      //   }else{
-      //     setHasMore(false)
-      //   }
-      // });
-      // setHasMore(false);
-    //}, 100);
+    },1000)
   }
 
+  function fetchDataInit(page, limit,){
+    fetch("http://localhost:3010/getData?count=" + 0 )
+    .then((response) => response.json())
+    .then((todos) => {
+        // when no data immediately finish
+        if(todos.length ===0 ) {setHasMore(false)}
+        setTodos((todos))
+    })
+  }
   function fetchData(page, limit, searchName, searchDate){
-    alert("fetchData")
-    fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit + "&searchName=" + searchName + "&searchDate = " + searchDate)
+   // alert("fetchData"+"page"+page+"limit"+limit)
+    
+    fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit )
       .then((response) => response.json())
       .then((todoList) => {
-        if(todoList.length > 0){
-          const newTodo = todoList;
-          if(search){
-            console.log("--------------------search ture")
-            setTodos(newTodo)
-          }else if(searchPress){
-            setTodos(newTodo)
-          }else{
-            console.log("----------------------------------------------------search false")
-            setTodos((todos) => [...todos, ...newTodo])
-          }
-        }else{
+        //alert(JSON.stringify(todoList))
+        if(!(todoList.length > 0)){
           setHasMore(false)
         }
       }).finally(()=>{
-        alert("finally");
+        //alert("finally");
         setHasMore(false);
       }
       );
@@ -196,7 +191,7 @@ function Todos() {
       dataLength={todos.length}
       next={() => loadFunc(page, pageLimit)}
       hasMore={hasMore}
-      loader={<Container maxWidth="md"><h3> Loading...</h3></Container>}
+      loader={<Container maxWidth="md"><h3> {todos.length} Loading...</h3></Container>}
       endMessage={<Container maxWidth="md"><h4>Nothing more to show</h4></Container>}
     >
       <Container maxWidth="md">

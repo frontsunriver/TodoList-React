@@ -31,12 +31,20 @@ app.get("/getData", async (req, res) => {
   const { count, limit, searchName, date } = req.query;
   console.log(req.query);
   const todos = database.client.db("todos").collection("todos");
-  
+
   var response;
-  if(searchName != null && searchName != '' ){
-    response = await todos.find({"todoText": new RegExp(searchName, 'i')}).skip(Number(count) * Number(limit)).limit(Number(limit)).toArray();
-  }else{
-    response = await todos.find({}).skip(Number(count) * Number(limit)).limit(Number(limit)).toArray();
+  if (searchName != null && searchName != "") {
+    response = await todos
+      .find({ todoText: new RegExp(searchName, "i") })
+      .skip(Number(count) * Number(limit))
+      .limit(Number(limit))
+      .toArray();
+  } else {
+    response = await todos
+      .find({})
+      .skip(Number(count) * Number(limit))
+      .limit(Number(limit))
+      .toArray();
   }
   res.status(200);
   res.json(response);

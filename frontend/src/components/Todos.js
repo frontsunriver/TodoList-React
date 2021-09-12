@@ -9,15 +9,15 @@ import {
   Paper,
   Box,
   FormControlLabel,
-  TextField
+  TextField,
 } from "@material-ui/core";
 
-import { Form, Col, Row } from 'react-bootstrap';
+import { Form, Col, Row } from "react-bootstrap";
 
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import InfiniteScroll from "react-infinite-scroll-component";
 import DragComponent from "./DragComponent";
-import TrelloLike    from "./TrelloLike";
+import TrelloLike from "./TrelloLike";
 
 const useStyles = makeStyles({
   addTodoContainer: { padding: 10 },
@@ -40,8 +40,8 @@ const useStyles = makeStyles({
     textDecoration: "line-through",
   },
   textField: {
-    marginLeft:  10,
-    marginRight: 10
+    marginLeft: 10,
+    marginRight: 10,
   },
   deleteTodo: {
     visibility: "hidden",
@@ -57,7 +57,7 @@ function Todos() {
   const [page, setPage] = useState(0);
   const searchName = useRef();
 
-  console.log("process.env" + JSON.stringify(process.env))
+  console.log("process.env" + JSON.stringify(process.env));
   const pageLimit = 10;
   // useEffect(() => {
   //   fetch("http://localhost:3010/getData?count=" + 0 + "&limit=" + pageLimit)
@@ -66,16 +66,14 @@ function Todos() {
   //       setTodos(todos);
   //     });
   // }, [setTodos]);
- 
-　useEffect(()=>{
-       fetchDataInit()
-     },[]
-  )
+
+  useEffect(() => {
+    fetchDataInit();
+  }, []);
   function addTodo(text) {
-   
-    if(!text.todoText || !text.dueDate ){
-      alert("validation enter task and duedate")
-      return
+    if (!text.todoText || !text.dueDate) {
+      alert("validation enter task and duedate");
+      return;
     }
     fetch("http://localhost:3010/", {
       headers: {
@@ -89,11 +87,11 @@ function Todos() {
         return response.json();
       })
       .then((todo) => {
-        todo.deadLineOver = false
+        todo.deadLineOver = false;
         setTodos([...todos, todo]);
         //setNewTodoText({ todoText: "", dueDate: "",filtered: true });
-      }).catch((error) => {
-      });
+      })
+      .catch((error) => {});
   }
 
   function toggleTodoCompleted(id) {
@@ -131,114 +129,128 @@ function Todos() {
     setTodos(items);
   }
 
-  async function loadFunc(page=0, limit=pageLimit){
+  async function loadFunc(page = 0, limit = pageLimit) {
     //alert("loadFunc")
-    setPage(page+1);
+    setPage(page + 1);
     //setSearchPress(false);
-    setTimeout(() =>{
+    setTimeout(() => {
       //let searchKey = searchName.current.value
-      fetchData(page + 1, limit ) ;//, searchKey, '123');
-    },1000)
+      fetchData(page + 1, limit); //, searchKey, '123');
+    }, 1000);
   }
 
-  function fetchDataInit(page, limit,){
-    fetch("http://localhost:3010/getData?count=" + 0 )
-    .then((response) => response.json())
-    .then((_todos) => {
+  function fetchDataInit(page, limit) {
+    fetch("http://localhost:3010/getData?count=" + 0)
+      .then((response) => response.json())
+      .then((_todos) => {
         // when no data immediately finish
-        if(_todos.length ===0 ) {
-          setHasMore(false)
-          return 
+        if (_todos.length === 0) {
+          setHasMore(false);
+          return;
         }
-        _todos.map(t => (t.deadLineOver = false))
+        _todos.map((t) => (t.deadLineOver = false));
         //alert("todos init " +JSON.stringify(todos)+todos.length+"]")
-        console.log(JSON.stringify(_todos))
+        console.log(JSON.stringify(_todos));
         setTodos(_todos);
-       // setTodos((todos))
-    })
+        // setTodos((todos))
+      });
   }
-  function fetchData(page, limit) { //, searchName, searchDate){
-   // alert("fetchData"+"page"+page+"limit"+limit)
-    
-    fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit )
+  function fetchData(page, limit) {
+    //, searchName, searchDate){
+    // alert("fetchData"+"page"+page+"limit"+limit)
+
+    fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit)
       .then((response) => response.json())
       .then((todoList) => {
         //alert(JSON.stringify(todoList))
-        if(!(todoList.length > 0)){
-          setHasMore(false)
+        if (!(todoList.length > 0)) {
+          setHasMore(false);
         }
-      }).finally(()=>{
+      })
+      .finally(() => {
         //alert("finally");
         setHasMore(false);
-      }
-      );
+      });
   }
 
-  async function filterTaskUntilToday(event){
-    setFilteredTodosFlag(event.target.checked)
-    if((event.target.checked)){
+  async function filterTaskUntilToday(event) {
+    setFilteredTodosFlag(event.target.checked);
+    if (event.target.checked) {
       //alert("checkbox is true")
-      todos.map(
-          (elem) =>  {
-          let dueDate = new Date(Date.parse(elem.dueDate))
-          let nowDate = new Date(Date.now())
-          console.log("dueDate"+dueDate.getMonth())
-          console.log("nowDate"+nowDate.getMonth())
+      todos.map((elem) => {
+        let dueDate = new Date(Date.parse(elem.dueDate));
+        let nowDate = new Date(Date.now());
+        console.log("dueDate" + dueDate.getMonth());
+        console.log("nowDate" + nowDate.getMonth());
 
- 
-          let deadLineOver =  ( new Date(dueDate.getFullYear(),dueDate.getMonth(),dueDate.getDate()))<=( new Date(nowDate.getFullYear(),nowDate.getMonth(),nowDate.getDate()))
-          console.log("deadlineover"+deadLineOver)
-          // deadline is over or today
-          if(deadLineOver){
-            elem.deadLineOver  = true
-          // still have some time until dead line 
-          }else{
-            elem.deadLineOver  = false
-          }
-        } 
-      )
-      console.log(JSON.stringify(todos))
-    } else{
-      todos.map(elem => (elem.deadLineOver = true))
-      console.log(JSON.stringify(todos))
-      setTodos(todos)
+        let deadLineOver =
+          new Date(
+            dueDate.getFullYear(),
+            dueDate.getMonth(),
+            dueDate.getDate()
+          ) <=
+          new Date(
+            nowDate.getFullYear(),
+            nowDate.getMonth(),
+            nowDate.getDate()
+          );
+        console.log("deadlineover" + deadLineOver);
+        // deadline is over or today
+        if (deadLineOver) {
+          elem.deadLineOver = true;
+          // still have some time until dead line
+        } else {
+          elem.deadLineOver = false;
+        }
+      });
+      console.log(JSON.stringify(todos));
+    } else {
+      todos.map((elem) => (elem.deadLineOver = true));
+      console.log(JSON.stringify(todos));
+      setTodos(todos);
     }
-      
   }
 
-  async function handleSearch(e){
+  async function handleSearch(e) {
     e.preventDefault();
-    var searchKey = searchName.current.value
-    setSearchPress(true)
-    if(searchKey == ''){
-      console.log("search Key false")
-      setSearch(false)
-    }else{
-      console.log("search Key true")
-      setSearch(true)
+    var searchKey = searchName.current.value;
+    setSearchPress(true);
+    if (searchKey == "") {
+      console.log("search Key false");
+      setSearch(false);
+    } else {
+      console.log("search Key true");
+      setSearch(true);
     }
-    setHasMore(true)
-    fetchData(0, pageLimit, searchKey, '123');
-      // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
-      // .then((response) => response.json())
-      // .then((todoList) => {
-      //   if(todoList.length > 0){
-      //     const newTodo = todoList;
-      //     setTodos((todos) => [...todos, ...newTodo])
-      //   }else{
-      //     setHasMore(false)
-      //   }
-      // });
+    setHasMore(true);
+    fetchData(0, pageLimit, searchKey, "123");
+    // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
+    // .then((response) => response.json())
+    // .then((todoList) => {
+    //   if(todoList.length > 0){
+    //     const newTodo = todoList;
+    //     setTodos((todos) => [...todos, ...newTodo])
+    //   }else{
+    //     setHasMore(false)
+    //   }
+    // });
   }
 
   return (
-   
     <InfiniteScroll
       dataLength={todos.length}
       next={() => loadFunc(page, pageLimit)}
       hasMore={hasMore}
-      loader={<Container maxWidth="md"><h3> {todos.length} Loading... Please scroll the bar </h3></Container>}
-      endMessage={<Container maxWidth="md"><h4>Nothing more to show</h4></Container>}
+      loader={
+        <Container maxWidth="md">
+          <h3> {todos.length} Loading... Please scroll the bar </h3>
+        </Container>
+      }
+      endMessage={
+        <Container maxWidth="md">
+          <h4>Nothing more to show</h4>
+        </Container>
+      }
     >
       <Container maxWidth="md">
         <Typography variant="h3" component="h1" gutterBottom>
@@ -248,7 +260,6 @@ function Todos() {
           <form className={classes.form}>
             <Box display="flex">
               <Box flexGrow={2}>
-              
                 <TextField
                   //fullWidth
                   className={classes.textField}
@@ -267,7 +278,7 @@ function Todos() {
                     })
                   }
                 />
-                
+
                 <TextField
                   //fullWidth
                   className={classes.textField}
@@ -299,47 +310,52 @@ function Todos() {
           </form>
           <FormControlLabel
             control={
-             <Checkbox checked={filteredTodosFlag} onClick={filterTaskUntilToday} name="gilad" />
+              <Checkbox
+                checked={filteredTodosFlag}
+                onClick={filterTaskUntilToday}
+                name="gilad"
+              />
             }
-             label="filter only tasks until today's due"
+            label="filter only tasks until today's due"
           />
-         
-
         </Paper>
         <DragDropContext onDragEnd={handleOnDragEnd}>
           <Droppable droppableId="characters">
             {(provided) => (
-              <ul className="characters" {...provided.droppableProps} ref={provided.innerRef}>
-                {todos.length > 0  &&(
+              <ul
+                className="characters"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {todos.length > 0 && (
                   <div>
                     {todos
-                     .filter(elem => 
-                       //console.log("filtered=======" +(elem.todoText)+":"+(elem.deadLineOver)+"過去だけ表示する");
-                        elem.deadLineOver
-                     )
-                     .map((elem, index) => {
-                      
-                      return(
-                        <DragComponent 
-                          elem={elem} 
-                          index={index} 
-                          provided={provided} 
-                          classes={classes} 
-                          deleteTodo={deleteTodo} 
-                          toggleTodoCompleted={toggleTodoCompleted}/>
-                        // <div>{JSON.stringify(elem)}</div>
+                      .filter(
+                        (elem) =>
+                          //console.log("filtered=======" +(elem.todoText)+":"+(elem.deadLineOver)+"過去だけ表示する");
+                          elem.deadLineOver
                       )
-                    })
-                    }
+                      .map((elem, index) => {
+                        return (
+                          <DragComponent
+                            elem={elem}
+                            index={index}
+                            provided={provided}
+                            classes={classes}
+                            deleteTodo={deleteTodo}
+                            toggleTodoCompleted={toggleTodoCompleted}
+                          />
+                          // <div>{JSON.stringify(elem)}</div>
+                        );
+                      })}
                   </div>
                 )}
-                </ul>
-              )
-            }
-            </Droppable>
-          </DragDropContext>
+              </ul>
+            )}
+          </Droppable>
+        </DragDropContext>
       </Container>
-     </InfiniteScroll>
+    </InfiniteScroll>
   );
 }
 

@@ -44,7 +44,9 @@ function TrelloLike() {
     }
 
     // Creating a copy of item before removing it from state
-    const itemCopy = { ...progressState[source.droppableId].items[source.index] };
+    const itemCopy = {
+      ...progressState[source.droppableId].items[source.index],
+    };
 
     setProgressState((prev) => {
       prev = { ...prev };

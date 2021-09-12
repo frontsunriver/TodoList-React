@@ -18,7 +18,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import DragComponent from "./DragComponent";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   addTodoContainer: { padding: 10 },
   addTodoButton: { marginLeft: 5 },
   todosContainer: { marginTop: 10, padding: 10 },
@@ -41,7 +41,13 @@ const useStyles = makeStyles({
   deleteTodo: {
     visibility: "hidden",
   },
-});
+  root: {
+    '& > *': {
+      margin: theme.spacing(1),
+      width: '30ch',
+    },
+  },
+}));
 
 function Todos() {
   const classes = useStyles();
@@ -119,7 +125,7 @@ function Todos() {
   async function loadFunc(page, limit=20){
     setPage(page+1);
     setSearchPress(false);
-    setTimeout(() => {
+    // setTimeout(() => {
       var searchKey = searchName.current.value
       fetchData(page + 1, limit, searchKey, '123');
       // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
@@ -132,7 +138,7 @@ function Todos() {
       //     setHasMore(false)
       //   }
       // });
-    }, 1000);
+    // }, 1000);
   }
 
   function fetchData(page, limit, searchName, searchDate){
@@ -203,52 +209,48 @@ function Todos() {
           </Form>
         </Paper>
         <Paper className={classes.addTodoContainer}>
-          <form className={classes.form}>
-            <Box display="flex" flexDirection="row">
-              <Box flexGrow={2}>
-                <TextField
-                  fullWidth
-                  placeholder="task .."
-                  name="todoText"
-                  value={newTodoText.todoText}
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      addTodo(newTodoText);
-                    }
-                  }}
-                  onChange={(event) =>
-                    setNewTodoText({
-                      ...newTodoText,
-                      [event.target.name]: event.target.value,
-                    })
-                  }
-                />
-                <TextField
-                  fullWidth
-                  placeholder="due date .."
-                  name="dueDate"
-                  value={newTodoText.dueDate}
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      addTodo(newTodoText);
-                    }
-                  }}
-                  onChange={(event) =>
-                    setNewTodoText({
-                      ...newTodoText,
-                      [event.target.name]: event.target.value,
-                    })
-                  }
-                />
-              </Box>
-              <Button
-                className={classes.addTodoButton}
-                startIcon={<Icon>add</Icon>}
-                onClick={() => addTodo(newTodoText)}
-              >
-                Adds
-              </Button>
-            </Box>
+          <form className={classes.root}>
+            <TextField
+              fullWidth
+              placeholder="task .."
+              name="todoText"
+              value={newTodoText.todoText}
+              onKeyPress={(event) => {
+                if (event.key === "Enter") {
+                  addTodo(newTodoText);
+                }
+              }}
+              onChange={(event) =>
+                setNewTodoText({
+                  ...newTodoText,
+                  [event.target.name]: event.target.value,
+                })
+              }
+            />
+            <TextField
+              fullWidth
+              placeholder="due date .."
+              name="dueDate"
+              value={newTodoText.dueDate}
+              onKeyPress={(event) => {
+                if (event.key === "Enter") {
+                  addTodo(newTodoText);
+                }
+              }}
+              onChange={(event) =>
+                setNewTodoText({
+                  ...newTodoText,
+                  [event.target.name]: event.target.value,
+                })
+              }
+            />
+            <Button
+              className={classes.addTodoButton}
+              startIcon={<Icon>add</Icon>}
+              onClick={() => addTodo(newTodoText)}
+            >
+              Adds
+            </Button>
           </form>
         </Paper>
         <DragDropContext onDragEnd={handleOnDragEnd}>

@@ -47,7 +47,7 @@ const useStyles = makeStyles({
 });
 
 function Todos() {
-  const classes = useStyles();
+  const classesStyles = useStyles();
   const [todos, setTodos] = useState([]);
   const [filteredTodosFlag, setFilteredTodosFlag] = useState(false);
   const [newTodoText, setNewTodoText] = useState({});
@@ -67,7 +67,8 @@ function Todos() {
       alert("validation enter task and duedate");
       return;
     }
-    fetch("http://localhost:3010/", {
+    console.log("addTodo");
+    fetch("http://localhost:80/", {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -83,11 +84,16 @@ function Todos() {
         setTodos([...todos, todo]);
         //setNewTodoText({ todoText: "", dueDate: "",filtered: true });
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log("add to do error" + error);
+      })
+      .finally(() => {
+        console.log("add to do finally");
+      });
   }
 
   function toggleTodoCompleted(id) {
-    fetch(`http://localhost:3010/${id}`, {
+    fetch(`http://localhost:80/${id}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -130,8 +136,9 @@ function Todos() {
     }, 1000);
   }
 
-  function fetchDataInit(page, limit) {
-    fetch("http://localhost:3010/getData?count=" + 0)
+  async function fetchDataInit(page, limit) {
+    console.log("fetchDataInit");
+    fetch("http://localhost:80/getData?count=" + 0)
       .then((response) => response.json())
       .then((_todos) => {
         // when no data immediately finish
@@ -144,10 +151,13 @@ function Todos() {
         console.log(JSON.stringify(_todos));
         setTodos(_todos);
         // setTodos((todos))
+      })
+      .catch((error) => {
+        console.log(error + "fetchDataInit error");
       });
   }
   function fetchData(page, limit) {
-    fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit)
+    fetch("http://localhost:80/getData?count=" + page + "&limit=" + limit)
       .then((response) => response.json())
       .then((todoList) => {
         if (!(todoList.length > 0)) {
@@ -242,13 +252,13 @@ function Todos() {
         <Typography variant="h3" component="h1" gutterBottom>
           Todos
         </Typography>
-        <Paper className={classes.addTodoContainer}>
-          <form className={classes.form}>
+        <Paper className={classesStyles.addTodoContainer}>
+          <form className={classesStyles.form}>
             <Box display="flex">
               <Box flexGrow={2}>
                 <TextField
                   //fullWidth
-                  className={classes.textField}
+                  className={classesStyles.textField}
                   placeholder="task .."
                   name="todoText"
                   value={newTodoText.todoText}
@@ -268,7 +278,7 @@ function Todos() {
 
                 <TextField
                   //fullWidth
-                  className={classes.textField}
+                  className={classesStyles.textField}
                   placeholder="due date .."
                   name="dueDate"
                   type="date"
@@ -288,7 +298,7 @@ function Todos() {
                 />
               </Box>
               <Button
-                className={classes.addTodoButton}
+                className={classesStyles.addTodoButton}
                 startIcon={<Icon>add</Icon>}
                 onClick={() => addTodo(newTodoText)}
                 data-testid="add-todo-test"
@@ -330,7 +340,7 @@ function Todos() {
                             elem={elem}
                             index={index}
                             provided={provided}
-                            classes={classes}
+                            classes={classesStyles}
                             deleteTodo={deleteTodo}
                             toggleTodoCompleted={toggleTodoCompleted}
                           />

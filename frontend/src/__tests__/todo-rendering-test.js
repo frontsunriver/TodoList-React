@@ -8,16 +8,25 @@ import FormTest from "../components/FormTest";
 import Todos from "../components/Todos";
 
 const server = setupServer(
-  rest.get("/greeting", (req, res, ctx) => {
-    return res(ctx.json({ greeting: "hello there" }));
+  rest.post("/", (req, res, ctx) => {
+    console.log("setUpServer post mock=============");
+    return res(ctx.json({ todoText: "mock Response", dueDate: "2021-08-01" }));
+  }),
+
+  rest.get("/getData", (req, res, ctx) => {
+    console.log("setUpServer get mock=================");
+    console.log("req.params" + req.params);
+    return res(
+      ctx.json([{ todoText: "mock Response", dueDate: "2021-08-01" }])
+    );
   })
 );
 
-beforeAll(() => server.listen());
+beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("loads and displays greeting", async () => {
+test("todos adding", async () => {
   const { getByTestId } = render(<Todos />);
 
   // const password = getByTestId("account-delete-password");
@@ -29,6 +38,8 @@ test("loads and displays greeting", async () => {
   fireEvent.change(todoDueDate, { target: { value: "2021-08-01" } });
 
   fireEvent.click(addButton);
+
+  await screen.findByRole("heading");
 
   // const { todos } = render(<Todos />);
 

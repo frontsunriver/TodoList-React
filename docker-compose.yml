@@ -12,10 +12,10 @@ services:
       - "3111:3000"
     depends_on: 
       - api
-    # env_file: 
-    #   - ./frontend/.env
+    env_file: 
+       - ./.env
     environment:
-      - REACT_APP_SAMPLE_ID=${REACT_APP_SAMPLE_ID}
+      - REACT_PRODUCTION_TYPE=${REACT_PRODUCTION_TYPE}
 
   api:
     hostname: api-host

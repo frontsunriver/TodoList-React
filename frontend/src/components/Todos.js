@@ -55,7 +55,14 @@ function Todos() {
   const [page, setPage] = useState(0);
   const searchName = useRef();
 
-  //console.log("process.env" + JSON.stringify(process.env));
+  console.log("process.env" + JSON.stringify(process.env));
+  let URL;
+  if(process.env.NODE_ENV === "development") {
+     console.log("here")
+     URL = "http://localhost:3010"
+  }else{
+     URL = "http://localhost:80"
+  }
   const pageLimit = 10;
 
   useEffect(() => {
@@ -68,7 +75,7 @@ function Todos() {
       return;
     }
     console.log("addTodo");
-    fetch("http://localhost:80/", {
+    fetch(`${URL}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -80,7 +87,12 @@ function Todos() {
         return response.json();
       })
       .then((todo) => {
-        todo.deadLineOver = false;
+        // if checkbox is on should be caliculate dealinecheck
+        if(filteredTodosFlag){
+           todo.deadLineOver = deadLineCheck(text.dueDate)
+        }else{
+           todo.deadLineOver = true;
+        }
         setTodos([...todos, todo]);
         //setNewTodoText({ todoText: "", dueDate: "",filtered: true });
       })
@@ -93,7 +105,7 @@ function Todos() {
   }
 
   function toggleTodoCompleted(id) {
-    fetch(`http://localhost:80/${id}`, {
+    fetch(`${URL}/${id}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -114,7 +126,7 @@ function Todos() {
   }
 
   function deleteTodo(id) {
-    fetch(`http://localhost:3010/${id}`, {
+    fetch(`${URL}/${id}`, {
       method: "DELETE",
     }).then(() => setTodos(todos.filter((todo) => todo.id !== id)));
   }
@@ -138,7 +150,7 @@ function Todos() {
 
   async function fetchDataInit(page, limit) {
     console.log("fetchDataInit");
-    fetch("http://localhost:80/getData?count=" + 0)
+    fetch(`${URL}/getData?count=` + 0)
       .then((response) => response.json())
       .then((_todos) => {
         // when no data immediately finish
@@ -146,7 +158,7 @@ function Todos() {
           setHasMore(false);
           return;
         }
-        _todos.map((t) => (t.deadLineOver = false));
+        _todos.map((t) => (t.deadLineOver = true));
         //alert("todos init " +JSON.stringify(todos)+todos.length+"]")
         console.log(JSON.stringify(_todos));
         setTodos(_todos);
@@ -157,7 +169,7 @@ function Todos() {
       });
   }
   function fetchData(page, limit) {
-    fetch("http://localhost:80/getData?count=" + page + "&limit=" + limit)
+    fetch(`${URL}/getData?count=` + page + "&limit=" + limit)
       .then((response) => response.json())
       .then((todoList) => {
         if (!(todoList.length > 0)) {
@@ -169,27 +181,35 @@ function Todos() {
       });
   }
 
+  function deadLineCheck(_dueDate){
+
+    let dueDate = new Date(Date.parse(_dueDate));
+    let nowDate = new Date(Date.now());
+    console.log("dueDate" + dueDate.getMonth());
+    console.log("nowDate" + nowDate.getMonth());
+
+    let deadLineOver =
+    new Date(
+      dueDate.getFullYear(),
+      dueDate.getMonth(),
+      dueDate.getDate()
+    ) <=
+    new Date(
+      nowDate.getFullYear(),
+      nowDate.getMonth(),
+      nowDate.getDate()
+    );
+    
+    return deadLineOver
+  }
+
   async function filterTaskUntilToday(event) {
     setFilteredTodosFlag(event.target.checked);
     if (event.target.checked) {
       //alert("checkbox is true")
       todos.map((elem) => {
-        let dueDate = new Date(Date.parse(elem.dueDate));
-        let nowDate = new Date(Date.now());
-        console.log("dueDate" + dueDate.getMonth());
-        console.log("nowDate" + nowDate.getMonth());
-
-        let deadLineOver =
-          new Date(
-            dueDate.getFullYear(),
-            dueDate.getMonth(),
-            dueDate.getDate()
-          ) <=
-          new Date(
-            nowDate.getFullYear(),
-            nowDate.getMonth(),
-            nowDate.getDate()
-          );
+    
+        let deadLineOver = deadLineCheck(elem.dueDate)
         console.log("deadlineover" + deadLineOver);
         // deadline is over or today
         if (deadLineOver) {
@@ -207,30 +227,7 @@ function Todos() {
     }
   }
 
-  async function handleSearch(e) {
-    e.preventDefault();
-    var searchKey = searchName.current.value;
-    setSearchPress(true);
-    if (searchKey == "") {
-      console.log("search Key false");
-      setSearch(false);
-    } else {
-      console.log("search Key true");
-      setSearch(true);
-    }
-    setHasMore(true);
-    fetchData(0, pageLimit, searchKey, "123");
-    // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
-    // .then((response) => response.json())
-    // .then((todoList) => {
-    //   if(todoList.length > 0){
-    //     const newTodo = todoList;
-    //     setTodos((todos) => [...todos, ...newTodo])
-    //   }else{
-    //     setHasMore(false)
-    //   }
-    // });
-  }
+
 
   return (
     <InfiniteScroll
@@ -239,7 +236,7 @@ function Todos() {
       hasMore={hasMore}
       loader={
         <Container maxWidth="md">
-          <h3> {todos.length} Loading... Please scroll the bar </h3>
+          <h3>  Loading... Please scroll the bar </h3>
         </Container>
       }
       endMessage={
@@ -331,8 +328,10 @@ function Todos() {
                     {todos
                       .filter(
                         (elem) =>
-                          //console.log("filtered=======" +(elem.todoText)+":"+(elem.deadLineOver)+"過去だけ表示する");
-                          elem.deadLineOver
+                         { 
+                          console.log("filtered=======" +(elem.todoText)+":"+(elem.deadLineOver)+"過去だけ表示する");
+                          return elem.deadLineOver
+                         }
                       )
                       .map((elem, index) => {
                         return (

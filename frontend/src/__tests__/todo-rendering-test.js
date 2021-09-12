@@ -22,9 +22,12 @@ test("loads and displays greeting", async () => {
 
   // const password = getByTestId("account-delete-password");
   const addButton = getByTestId("add-todo-test");
-  // const submit = getByTestId("account-delete-submit");
+  const todoText = getByTestId("todo-text");
+  const todoDueDate = getByTestId("todo-duedate");
 
-  // fireEvent.change(password, { target: { value: "password" } });
+  fireEvent.change(todoText, { target: { value: "todoTextTestTestTest" } });
+  fireEvent.change(todoDueDate, { target: { value: "2021-08-01" } });
+
   fireEvent.click(addButton);
 
   // const { todos } = render(<Todos />);

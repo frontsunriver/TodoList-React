@@ -47,7 +47,7 @@ const useStyles = makeStyles({
 });
 
 function Todos() {
-  const classesStyles = useStyles();
+  const classes = useStyles();
   const [todos, setTodos] = useState([]);
   const [filteredTodosFlag, setFilteredTodosFlag] = useState(false);
   const [newTodoText, setNewTodoText] = useState({});
@@ -55,7 +55,7 @@ function Todos() {
   const [page, setPage] = useState(0);
   const searchName = useRef();
 
-  console.log("process.env" + JSON.stringify(process.env));
+  //console.log("process.env" + JSON.stringify(process.env));
   const pageLimit = 10;
 
   useEffect(() => {
@@ -242,13 +242,13 @@ function Todos() {
         <Typography variant="h3" component="h1" gutterBottom>
           Todos
         </Typography>
-        <Paper className={classesStyles.addTodoContainer}>
-          <form className={classesStyles.form}>
+        <Paper className={classes.addTodoContainer}>
+          <form className={classes.form}>
             <Box display="flex">
               <Box flexGrow={2}>
                 <TextField
                   //fullWidth
-                  className={classesStyles.textField}
+                  className={classes.textField}
                   placeholder="task .."
                   name="todoText"
                   value={newTodoText.todoText}
@@ -268,7 +268,7 @@ function Todos() {
 
                 <TextField
                   //fullWidth
-                  className={classesStyles.textField}
+                  className={classes.textField}
                   placeholder="due date .."
                   name="dueDate"
                   type="date"
@@ -288,10 +288,9 @@ function Todos() {
                 />
               </Box>
               <Button
-                className={classesStyles.addTodoButton}
+                className={classes.addTodoButton}
                 startIcon={<Icon>add</Icon>}
                 onClick={() => addTodo(newTodoText)}
-                disabled={!newTodoText.dueDate || !newTodoText.todoText}
                 data-testid="add-todo-test"
               >
                 Adds
@@ -331,7 +330,7 @@ function Todos() {
                             elem={elem}
                             index={index}
                             provided={provided}
-                            classes={classesStyles}
+                            classes={classes}
                             deleteTodo={deleteTodo}
                             toggleTodoCompleted={toggleTodoCompleted}
                           />

@@ -47,7 +47,7 @@ const useStyles = makeStyles({
 });
 
 function Todos() {
-  const classes = useStyles();
+  const classesStyles = useStyles();
   const [todos, setTodos] = useState([]);
   const [filteredTodosFlag, setFilteredTodosFlag] = useState(false);
   const [newTodoText, setNewTodoText] = useState({});
@@ -242,13 +242,13 @@ function Todos() {
         <Typography variant="h3" component="h1" gutterBottom>
           Todos
         </Typography>
-        <Paper className={classes.addTodoContainer}>
-          <form className={classes.form}>
+        <Paper className={classesStyles.addTodoContainer}>
+          <form className={classesStyles.form}>
             <Box display="flex">
               <Box flexGrow={2}>
                 <TextField
                   //fullWidth
-                  className={classes.textField}
+                  className={classesStyles.textField}
                   placeholder="task .."
                   name="todoText"
                   value={newTodoText.todoText}
@@ -263,11 +263,12 @@ function Todos() {
                       [event.target.name]: event.target.value,
                     })
                   }
+                  inputProps={{ "data-testid": "todo-text" }}
                 />
 
                 <TextField
                   //fullWidth
-                  className={classes.textField}
+                  className={classesStyles.textField}
                   placeholder="due date .."
                   name="dueDate"
                   type="date"
@@ -283,12 +284,14 @@ function Todos() {
                       [event.target.name]: event.target.value,
                     })
                   }
+                  inputProps={{ "data-testid": "todo-duedate" }}
                 />
               </Box>
               <Button
-                className={classes.addTodoButton}
+                className={classesStyles.addTodoButton}
                 startIcon={<Icon>add</Icon>}
                 onClick={() => addTodo(newTodoText)}
+                disabled={!newTodoText.dueDate || !newTodoText.todoText}
                 data-testid="add-todo-test"
               >
                 Adds
@@ -328,7 +331,7 @@ function Todos() {
                             elem={elem}
                             index={index}
                             provided={provided}
-                            classes={classes}
+                            classes={classesStyles}
                             deleteTodo={deleteTodo}
                             toggleTodoCompleted={toggleTodoCompleted}
                           />

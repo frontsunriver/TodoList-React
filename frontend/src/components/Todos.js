@@ -12,8 +12,6 @@ import {
   TextField,
 } from "@material-ui/core";
 
-import { Form, Col, Row } from "react-bootstrap";
-
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DragComponent from "./DragComponent";
@@ -59,17 +57,11 @@ function Todos() {
 
   console.log("process.env" + JSON.stringify(process.env));
   const pageLimit = 10;
-  // useEffect(() => {
-  //   fetch("http://localhost:3010/getData?count=" + 0 + "&limit=" + pageLimit)
-  //     .then((response) => response.json())
-  //     .then((todos) => {
-  //       setTodos(todos);
-  //     });
-  // }, [setTodos]);
 
   useEffect(() => {
     fetchDataInit();
   }, []);
+
   function addTodo(text) {
     if (!text.todoText || !text.dueDate) {
       alert("validation enter task and duedate");
@@ -130,7 +122,6 @@ function Todos() {
   }
 
   async function loadFunc(page = 0, limit = pageLimit) {
-    //alert("loadFunc")
     setPage(page + 1);
     //setSearchPress(false);
     setTimeout(() => {
@@ -156,19 +147,14 @@ function Todos() {
       });
   }
   function fetchData(page, limit) {
-    //, searchName, searchDate){
-    // alert("fetchData"+"page"+page+"limit"+limit)
-
     fetch("http://localhost:3010/getData?count=" + page + "&limit=" + limit)
       .then((response) => response.json())
       .then((todoList) => {
-        //alert(JSON.stringify(todoList))
         if (!(todoList.length > 0)) {
           setHasMore(false);
         }
       })
       .finally(() => {
-        //alert("finally");
         setHasMore(false);
       });
   }
@@ -303,6 +289,7 @@ function Todos() {
                 className={classes.addTodoButton}
                 startIcon={<Icon>add</Icon>}
                 onClick={() => addTodo(newTodoText)}
+                data-testid="add-todo-test"
               >
                 Adds
               </Button>

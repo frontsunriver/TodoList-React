@@ -34,8 +34,6 @@ function Todos(props) {
   const [errorDate, setErrorDate] = useState(false);
   const [dateErrorMsg, setDateErrorMsg] = useState('');
   
-  const searchName = useRef();
-
   let URL;
   // if (process.env.NODE_ENV === "development") {
   //   console.log("props.hasMore" + props.hasMore)
@@ -233,30 +231,36 @@ function Todos(props) {
     }
   }
 
-  // async function handleSearch(e) {
-  //   e.preventDefault();
-  //   var searchKey = searchName.current.value;
-  //   setSearchPress(true);
-  //   if (searchKey == "") {
-  //     console.log("search Key false");
-  //     setSearch(false);
-  //   } else {
-  //     console.log("search Key true");
-  //     setSearch(true);
-  //   }
-  //   setHasMore(true);
-  //   fetchData(0, pageLimit, searchKey, "123");
-  //   // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
-  //   // .then((response) => response.json())
-  //   // .then((todoList) => {
-  //   //   if(todoList.length > 0){
-  //   //     const newTodo = todoList;
-  //   //     setTodos((todos) => [...todos, ...newTodo])
-  //   //   }else{
-  //   //     setHasMore(false)
-  //   //   }
-  //   // });
-  // }
+  async function handleSearch(e) {
+    e.preventDefault();
+    var searchName = newTodoText.searchName;
+    // console.log(newTodoText)
+    axios
+      .get(`${URL}/getData?count=` + page + "&limit=" + pageLimit + "&searchName=" + searchName)
+      .then((response) => response.data)
+      .then((todoList) => {
+        if (!(todoList.length > 0)) {
+          setHasMore(false);
+        }else{
+          console.log(todoList)
+          todoList.map((t) => (t.deadLineOver = true));
+          setTodos(todoList)
+        }
+      })
+      .finally(() => {
+        setHasMore(false);
+      });
+    // fetch("http://localhost:3001/getData?count=" + (page + 1) + "&limit=" + limit)
+    // .then((response) => response.json())
+    // .then((todoList) => {
+    //   if(todoList.length > 0){
+    //     const newTodo = todoList;
+    //     setTodos((todos) => [...todos, ...newTodo])
+    //   }else{
+    //     setHasMore(false)
+    //   }
+    // });
+  }
 
   return (
     <InfiniteScroll
@@ -291,11 +295,11 @@ function Todos(props) {
                     //fullWidth
                     className={classesStyles.textField}
                     placeholder="search task"
-                    value={newTodoText.dueDate}
+                    name="searchName"
                     onKeyPress={(event) => {
-                      if (event.key === "Enter") {
-                        addTodo(newTodoText);
-                      }
+                      // if (event.key === "Enter") {
+                      //   addTodo(newTodoText);
+                      // }
                     }}
                     onChange={(event) =>
                       setNewTodoText({
@@ -307,7 +311,7 @@ function Todos(props) {
                   <Button
                     className={classesStyles.addTodoButton}
                     startIcon={<Icon>search</Icon>}
-                    onClick={() => addTodo(newTodoText)}
+                    onClick={handleSearch}
                     data-testid="add-todo-test"
                   >
                     Seach Tasks

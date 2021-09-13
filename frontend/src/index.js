@@ -6,7 +6,7 @@ import TrelloLike from "./components/TrelloLike";
 ReactDOM.render(
   <React.StrictMode>
     <CssBaseline />
-    <TrelloLike></TrelloLike>
+    {/* <TrelloLike></TrelloLike> */}
     <Todos />
   </React.StrictMode>,
   document.getElementById("root")

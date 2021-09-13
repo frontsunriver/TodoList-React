@@ -1,48 +1,60 @@
 import * as React from "react";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import { fireEvent, render, screen } from "@testing-library/react";
+const { v4: generateId } = require("uuid");
+import axios from "axios";
+import { fireEvent, render, screen, container } from "@testing-library/react";
+import {
+  getByRole,
+  getByText,
+  findByText,
+  getByPlaceholderText,
+} from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import FormTest from "../components/FormTest";
 import Todos from "../components/Todos";
+import App2 from "../components/FormTest";
 
-const server = setupServer(
-  rest.post("/", (req, res, ctx) => {
-    console.log("setUpServer post mock=============");
-    return res(ctx.json({ todoText: "mock Response", dueDate: "2021-08-01" }));
-  }),
+beforeAll(() => {});
+afterEach(() => {});
+afterAll(() => {});
 
-  rest.get("/getData", (req, res, ctx) => {
-    console.log("setUpServer get mock=================");
-    console.log("req.params" + req.params);
-    return res(
-      ctx.json([{ todoText: "mock Response", dueDate: "2021-08-01" }])
-    );
-  })
-);
-
-beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+jest.mock("axios");
 
 test("todos adding", async () => {
-  const { getByTestId } = render(<Todos />);
+  const todoRes = [
+    { id: "1111", dueDate: "2020-01-01", todoText: "test HogeHoge todo" },
+  ];
+  const resp = { data: todoRes };
+  axios.get.mockResolvedValue(resp);
+  axios.post.mockResolvedValue(resp);
 
-  // const password = getByTestId("account-delete-password");
-  const addButton = getByTestId("add-todo-test");
-  const todoText = getByTestId("todo-text");
-  const todoDueDate = getByTestId("todo-duedate");
+  const { getByTestId } = render(<Todos pageLimit="1" hasMore={false} />);
 
-  fireEvent.change(todoText, { target: { value: "todoTextTestTestTest" } });
-  fireEvent.change(todoDueDate, { target: { value: "2021-08-01" } });
+  // const addButton = getByTestId("add-todo-test");
+  // const todoText = getByTestId("todo-text");
+  // const todoDueDate = getByTestId("todo-duedate");
 
-  fireEvent.click(addButton);
+  // fireEvent.change(todoText, { target: { value: "todoTextTestTestTest" } });
+  // fireEvent.change(todoDueDate, { target: { value: "2021-08-01" } });
 
-  await screen.findByRole("heading");
+  fireEvent.scroll(window, { target: { scrollY: 800 } });
 
-  // const { todos } = render(<Todos />);
-
-  // const addTestButton = todos("add-test-button");
-  // fireEvent.click(addTestButton);
+  // fireEvent.click(addButton);
+  await screen.getByText("Nothing more to show");
+  await screen.getByText("test HogeHoge todo");
 });
+
+// test("checked", () => {
+//   const users = [
+//     { id: "1111", dueDate: "2020-01-01", todoText: "test HogeHoge todo" },
+//   ];
+//   const resp = { data: users };
+//   axios.get.mockResolvedValue(resp);
+//   const { getByTestId } = render(<Todos pageLimit="1" hasMore="true" />);
+//   const checkbox = getByTestId("checkbox");
+//   const isChecked = checkbox.checked;
+//   fireEvent.change(checkbox);
+//   expect(checkbox.checked).toEqual(!isChecked);
+// });

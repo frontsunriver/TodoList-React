@@ -28,26 +28,15 @@ export default function DragComponent(props) {
         // alert(JSON.stringify(elem))
 
         return (
-          <Table
+          // <Table>
+          <TableBody
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
           >
-            <TableHead>
-              <TableRow>
-                <TableCell>Status </TableCell>
-                <TableCell>Task Name</TableCell>
-                <TableCell>Due Date</TableCell>
-                <TableCell>Delete </TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody
-              display="flex"
-              flexDirection="row"
-              alignItems="center"
-              // className={classes.todoContainer}
-            >
               <TableCell>
                 <Checkbox
                   checked={elem.completed}
@@ -65,6 +54,7 @@ export default function DragComponent(props) {
               >
                 {elem.dueDate}
               </TableCell>
+              <TableCell>
               <Button
                 // className={classes.deleteTodo}
                 // startIcon={<Icon>delete</Icon>}
@@ -72,8 +62,9 @@ export default function DragComponent(props) {
               >
                 Delete
               </Button>
+              </TableCell>
+
             </TableBody>
-          </Table>
         );
       }}
     </Draggable>

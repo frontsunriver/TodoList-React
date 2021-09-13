@@ -1,5 +1,5 @@
-import useStyles from "./styles";
 import React, { useRef, useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import {
   Checkbox,
@@ -19,11 +19,39 @@ import DragComponent from "./DragComponent";
 import TrelloLike from "./TrelloLike";
 const { v4: generateId } = require("uuid");
 
+const useStyles = makeStyles({
+  addTodoContainer: { padding: 10 },
+  addTodoButton: { marginLeft: 5 },
+  todosContainer: { marginTop: 10, padding: 10 },
+  todoContainer: {
+    borderTop: "1px solid #bfbfbf",
+    marginTop: 5,
+    "&:first-child": {
+      margin: 0,
+      borderTop: "none",
+    },
+    "&:hover": {
+      "& $deleteTodo": {
+        visibility: "visible",
+      },
+    },
+  },
+  todoTextCompleted: {
+    textDecoration: "line-through",
+  },
+  textField: {
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  deleteTodo: {
+    visibility: "hidden",
+  },
+});
 
 function Todos(props) {
-  const classesStyles = useStyles;
+  const classesStyles = useStyles();
   const [todos, setTodos] = useState([]);
-  const [filteredTodosFlag, setFilteredTodosFlag] = useState(false);
+  const [filteredTodosFlag, setFilteredTodosFlag] = useState(props.hasMore);
   const [newTodoText, setNewTodoText] = useState({});
   const [hasMore, setHasMore] = useState(props.hasMore);
   const [page, setPage] = useState(0);
@@ -45,10 +73,10 @@ function Todos(props) {
 
   async function addTodo(text) {
     if (!text.todoText || !text.dueDate) {
-      alert("validation enter task and duedate");
-      return;
+       alert("validation enter task and duedate");
+       return;
     }
-    console.log("addTodo1");
+    console.log("addTodo====================");
     axios
       .post(`${URL}`, {
         headers: {
@@ -60,16 +88,13 @@ function Todos(props) {
         text,
       })
       .then((response) => {
-        console.log("addTodo2");
         return response.data;
       })
       .then((todo) => {
-        console.log(
-          "addTodo2<この要素１個だけ追加する＞" + JSON.stringify(todo)
-        );
+        console.log("add前のデータ=========="+JSON.stringify(todos));
         todo.deadLineOver = true;
         setTodos([...todos, todo]);
-        console.log("addTodo2<結果これで全部＞" + JSON.stringify(todos));
+        console.log("add後のデータ=========="+JSON.stringify(todos));
         //setNewTodoText({ todoText: "", dueDate: "",filtered: true });
       })
       .catch((error) => {
@@ -128,24 +153,21 @@ function Todos(props) {
   }
 
   function fetchDataInit(page, limit) {
-    console.log("fetchDataInit!!!!");
+    console.log("fetchDataInit!!!!===========================");
     axios
       .get(`${URL}/getData`)
       .then((response) => {
         let _todos = response.data;
-        console.log("_todos" + _todos);
-
         // when no data immediately finish
         if (_todos.length === 0) {
-          console.log("fetchDataInit2");
           setHasMore(false);
           return;
         }
-        //alert("todos init " +JSON.stringify(todos)+todos.length+"]")
         console.log("fetchDataInit" + JSON.stringify(_todos));
         console.log("hasMore" + hasMore);
         _todos.map((t) => (t.deadLineOver = true));
-        setTodos(_todos);
+        setTodos([...todos,_todos]);
+        console.log("fetchDataInit デッドラインを足して.." + JSON.stringify(todos));
       })
       .catch((error) => {
         console.log(error + "fetchDataInit error");
@@ -176,8 +198,8 @@ function Todos(props) {
       todos.map((elem) => {
         let dueDate = new Date(Date.parse(elem.dueDate));
         let nowDate = new Date(Date.now());
-        console.log("dueDate" + dueDate);
-        console.log("nowDate" + nowDate);
+        console.log("dueDate" + dueDate.getMonth());
+        console.log("nowDate" + nowDate.getMonth());
 
         let deadLineOver =
           new Date(
@@ -190,9 +212,7 @@ function Todos(props) {
             nowDate.getMonth(),
             nowDate.getDate()
           );
-        console.log("deadlineover=========" + deadLineOver);
-        console.log("deadlineover=========" + deadLineOver);
-        console.log("deadlineover=========" + deadLineOver);
+        console.log("deadlineover" + deadLineOver);
         // deadline is over or today
         if (deadLineOver) {
           elem.deadLineOver = true;
@@ -259,33 +279,6 @@ function Todos(props) {
         <Typography variant="h3" component="h1" gutterBottom>
           Todos
         </Typography>
-        <Paper>
-        <TextField
-                //fullWidth
-                className={classesStyles.textField}
-                placeholder="search task"
-                value={newTodoText.dueDate}
-                onKeyPress={(event) => {
-                  if (event.key === "Enter") {
-                    addTodo(newTodoText);
-                  }
-                }}
-                onChange={(event) =>
-                  setNewTodoText({
-                    ...newTodoText,
-                    [event.target.name]: event.target.value,
-                  })
-                }
-              />
-              <Button
-                className={classesStyles.addTodoButton}
-                startIcon={<Icon>search</Icon>}
-                onClick={() => addTodo(newTodoText)}
-                data-testid="add-todo-test"
-              >
-                Seach Tasks
-              </Button>
-        </Paper>
         <Paper className={classesStyles.addTodoContainer}>
           <form className={classesStyles.form}>
             <Box display="flex">
@@ -294,8 +287,8 @@ function Todos(props) {
                   //fullWidth
                   className={classesStyles.textField}
                   placeholder="task .."
+                  name="todoText"
                   value={newTodoText.todoText}
-                  getByLabelText
                   onKeyPress={(event) => {
                     if (event.key === "Enter") {
                       addTodo(newTodoText);
@@ -314,6 +307,7 @@ function Todos(props) {
                   //fullWidth
                   className={classesStyles.textField}
                   placeholder="due date .."
+                  name="dueDate"
                   type="date"
                   value={newTodoText.dueDate}
                   onKeyPress={(event) => {
@@ -340,24 +334,19 @@ function Todos(props) {
               </Button>
             </Box>
           </form>
-          <Box display="flex">
-            <Box flexGrow={2}>
-              <FormControlLabel
-                label="Todo Checkbox"
-                control={
-                  <Checkbox
-                    checked={filteredTodosFlag}
-                    onClick={filterTaskUntilToday}
-                    name="gilad"
-                    data-testid="todo-checkbox"
-                  />
-                }
-                label="filter only tasks until today's due"
+          <FormControlLabel
+            label="Todo Checkbox"
+            control={
+              <Checkbox
+                checked={filteredTodosFlag}
+                onClick={filterTaskUntilToday}
+                name="gilad"
+                data-testid="todo-checkbox"
               />
-            </Box>
-          </Box>
+            }
+            label="filter only tasks until today's due"
+          />
         </Paper>
-       
         <DragDropContext onDragEnd={handleOnDragEnd} role="test-contents">
           <Droppable droppableId="character">
             {(provided) => (
@@ -370,27 +359,27 @@ function Todos(props) {
                   <div id>
                     {todos
                       .filter((elem) => {
-                        console.log(
-                          "filtered=======" +
-                            JSON.stringify(elem) +
-                            "過去だけ表示する"
-                        );
-                        return elem.deadLineOver;
+                        // console.log(
+                        //   "filtered=======" +
+                        //     JSON.stringify(elem)+
+                        //     "過去だけ表示する"
+                        // );
+                        if(elem){ return elem.deadLineOver || elem.deadLineOver === "mock";}
                       })
                       .map((elem, index) => {
                         console.log(
                           JSON.stringify(elem) + "ここ表示されてほしいい!!!!!!!"
                         );
                         return (
-                          <DragComponent
-                            elem={elem}
-                            index={index}
-                            provided={provided}
-                            classes={classesStyles}
-                            deleteTodo={deleteTodo}
-                            toggleTodoCompleted={toggleTodoCompleted}
-                          />
-                          // <div id={index}>{JSON.stringify(elem)}</div>
+                          // <DragComponent
+                          //   elem={elem}
+                          //   index={index}
+                          //   provided={provided}
+                          //   classes={classesStyles}
+                          //   deleteTodo={deleteTodo}
+                          //   toggleTodoCompleted={toggleTodoCompleted}
+                          // />
+                           <div id={index}>{JSON.stringify(elem)}</div>
                         );
                       })}
                   </div>

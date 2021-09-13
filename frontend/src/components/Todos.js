@@ -92,9 +92,10 @@ function Todos(props) {
         return response.data;
       })
       .then((todo) => {
-        console.log("addTodo2");
-        todo.deadLineOver = false;
+        console.log("addTodo2<この要素１個だけ追加する＞"+JSON.stringify(todo));
+        todo.deadLineOver = true;
         setTodos([...todos, todo]);
+        console.log("addTodo2<結果これで全部＞"+JSON.stringify(todos));
         //setNewTodoText({ todoText: "", dueDate: "",filtered: true });
       })
       .catch((error) => {
@@ -201,8 +202,8 @@ function Todos(props) {
       todos.map((elem) => {
         let dueDate = new Date(Date.parse(elem.dueDate));
         let nowDate = new Date(Date.now());
-        console.log("dueDate" + dueDate.getMonth());
-        console.log("nowDate" + nowDate.getMonth());
+        console.log("dueDate" + dueDate);
+        console.log("nowDate" + nowDate);
 
         let deadLineOver =
           new Date(
@@ -215,7 +216,9 @@ function Todos(props) {
             nowDate.getMonth(),
             nowDate.getDate()
           );
-        console.log("deadlineover" + deadLineOver);
+        console.log("deadlineover=========" + deadLineOver);
+        console.log("deadlineover=========" + deadLineOver);
+        console.log("deadlineover=========" + deadLineOver);
         // deadline is over or today
         if (deadLineOver) {
           elem.deadLineOver = true;
@@ -290,8 +293,9 @@ function Todos(props) {
                   //fullWidth
                   className={classesStyles.textField}
                   placeholder="task .."
-                  name="todoText"
+                  label="todoText"
                   value={newTodoText.todoText}
+                  getByLabelText
                   onKeyPress={(event) => {
                     if (event.key === "Enter") {
                       addTodo(newTodoText);
@@ -310,8 +314,9 @@ function Todos(props) {
                   //fullWidth
                   className={classesStyles.textField}
                   placeholder="due date .."
-                  name="dueDate"
+                  label="dueDate"
                   type="date"
+                  label="dueDate"
                   value={newTodoText.dueDate}
                   onKeyPress={(event) => {
                     if (event.key === "Enter") {
@@ -331,6 +336,7 @@ function Todos(props) {
                 className={classesStyles.addTodoButton}
                 startIcon={<Icon>add</Icon>}
                 onClick={() => addTodo(newTodoText)}
+                lable="addTodo"
                 data-testid="add-todo-test"
               >
                 Adds
@@ -363,10 +369,7 @@ function Todos(props) {
                     {todos
                       .filter((elem) => {
                         console.log(
-                          "filtered=======" +
-                            elem.todoText +
-                            ":" +
-                            elem.deadLineOver +
+                          "filtered=======" +JSON.stringfy(elem) +
                             "過去だけ表示する"
                         );
                         return elem.deadLineOver;

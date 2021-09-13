@@ -1,7 +1,8 @@
 import * as React from "react";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
-const { v4: generateId } = require("uuid");
+// import { rest } from "msw";
+// import { setupServer } from "msw/node";
+// const { v4: generateId } = require("uuid");
+import { act } from 'react-dom/test-utils';
 import axios from "axios";
 import { fireEvent, render, screen, container } from "@testing-library/react";
 import {
@@ -9,12 +10,11 @@ import {
   getByText,
   findByText,
   getByPlaceholderText,
+  getByLabelText
 } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
-import FormTest from "../components/FormTest";
 import Todos from "../components/Todos";
-import App2 from "../components/FormTest";
 
 beforeAll(() => {});
 afterEach(() => {});
@@ -77,11 +77,9 @@ test("todos filter only past when checked #4", async () => {
   expect(screen.getByRole("loadingStatus")).toHaveTextContent("Nothing more to show")
 
   const checkboxEl = await screen.getByTestId('todo-checkbox') 
-  userEvent.click(checkboxEl)
-  //expect(checkboxEl).toBeChecked()
+  await userEvent.click(checkboxEl)
+  
   // await screen.getByText('Nothing more to show')
-
- //expect(checkbox.checked).toBe(true)
 
   // const addButton = getByTestId("add-todo-test");
   // const todoText = getByTestId("todo-text");
@@ -95,10 +93,61 @@ test("todos filter only past when checked #4", async () => {
   
   await screen.getByText("Nothing more to show");
   expect(screen.getByText("todo Past #1")).toBeTruthy();
+  expect(screen.getByText("todo Past #2")).toBeTruthy();
   expect(screen.queryByText("todo Future #2")).not.toBeInTheDocument()
-  //expect(screen.getByRole("test-contents")).toHaveTextContent("test HogeHoge todo")
+  
 
 });
+
+// test("add todos #5", async () => {
+
+//   const resp = { data: [
+//     { id: "1111", dueDate: "1900-01-01", todoText: "todo Past #1" },
+//     { id: "2222", dueDate: "2020-01-01", todoText: "todo Past #2" },
+//     { id: "3333", dueDate: "2050-02-01", todoText: "todo Future #3" }
+//   ] };
+//   axios.get.mockResolvedValue(resp);
+
+//   const respAdd = { data: [
+//     { id: "4444", dueDate: "1900-05-05", todoText: "todo Past #4" }
+//   ] };
+//   axios.post.mockResolvedValue(respAdd);
+
+
+  
+//   // act(() => {
+//      const{getByTestId}  = render(<Todos pageLimit="1" hasMore={false} />);
+//      const addButton = getByTestId("add-todo-test");
+//      const todoText = getByTestId("todo-text");
+//      const todoDueDate = getByTestId("todo-duedate");
+
+//      fireEvent.change(todoText, { target: { value: "todoTextTestTestTest" } });
+//      fireEvent.change(todoDueDate, { target: { value: "2021-08-01" } });
+//      fireEvent.click(addButton);
+    
+//      // const{getByTestId}  = render(<Todos pageLimit="1" hasMore={false} />);
+    
+   
+//     // const todoDueDate =  getByTestId("todo-duedate");
+//     // const todoText = getByTestId("todo-text");
+//     // const addButton = getByTestId("addTodo");
+
+//     // fireEvent.change(todoText, { target: { value: "todoTextTestTestTest" } });
+//     // fireEvent.change(todoDueDate, { target: { value: "2021-08-01" } });
+//     // fireEvent.click(addButton);
+
+//   //});
+
+
+//   await screen.getByText("Nothing more to show");
+//   expect(screen.getByText("todo Past #1")).toBeTruthy();
+//   expect(screen.queryByText("todo Future #2")).not.toBeInTheDocument()
+//   expect(screen.getByText("todo Past #4")).toBeTruthy();
+
+//   //fireEvent.scroll(window, { target: { scrollY: 800 } });
+  
+
+// });
 
 // test("checked", () => {
 //   const users = [

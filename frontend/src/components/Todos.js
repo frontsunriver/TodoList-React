@@ -169,7 +169,7 @@ function Todos(props) {
         //alert("todos init " +JSON.stringify(todos)+todos.length+"]")
         console.log("fetchDataInit" + JSON.stringify(_todos));
         console.log("hasMore" + hasMore);
-        _todos.map((t) => (t.deadLineOver = false));
+        _todos.map((t) => (t.deadLineOver = true));
         setTodos(_todos);
       })
       .catch((error) => {
@@ -264,14 +264,17 @@ function Todos(props) {
       hasMore={hasMore}
       loader={
         <Container maxWidth="md">
-          <h3 role="loadingStatus">
-            {todos.length} Loading... Please scroll the bar{" "}
+          <h3 role="loadingStatus" data-testid="loadingStatus-test">
+            Loading... Please scroll the bar
           </h3>
         </Container>
       }
       endMessage={
         <Container maxWidth="md">
-          <h4 role="loadingStatus">Nothing more to show</h4>
+          <h4 role="loadingStatus" data-testid="loadingStatus-test">
+            {" "}
+            Nothing more to show
+          </h4>
         </Container>
       }
     >
@@ -335,17 +338,19 @@ function Todos(props) {
             </Box>
           </form>
           <FormControlLabel
+            label="Todo Checkbox"
             control={
               <Checkbox
                 checked={filteredTodosFlag}
                 onClick={filterTaskUntilToday}
                 name="gilad"
+                data-testid="todo-checkbox"
               />
             }
             label="filter only tasks until today's due"
           />
         </Paper>
-        <DragDropContext onDragEnd={handleOnDragEnd}>
+        <DragDropContext onDragEnd={handleOnDragEnd} role="test-contents">
           <Droppable droppableId="character">
             {(provided) => (
               <div
@@ -356,16 +361,16 @@ function Todos(props) {
                 {todos.length > 0 && (
                   <div id>
                     {todos
-                      // .filter((elem) => {
-                      //   console.log(
-                      //     "filtered=======" +
-                      //       elem.todoText +
-                      //       ":" +
-                      //       elem.deadLineOver +
-                      //       "過去だけ表示する"
-                      //   );
-                      //   return elem.deadLineOver;
-                      // })
+                      .filter((elem) => {
+                        console.log(
+                          "filtered=======" +
+                            elem.todoText +
+                            ":" +
+                            elem.deadLineOver +
+                            "過去だけ表示する"
+                        );
+                        return elem.deadLineOver;
+                      })
                       .map((elem, index) => {
                         console.log(
                           JSON.stringify(elem) + "ここ表示されてほしいい!!!!!!!"

@@ -10,9 +10,15 @@ import {
 } from "@material-ui/core";
 
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
+import { makeStyles } from "@material-ui/core/styles";
+
+
+
 
 export default function DragComponent(props) {
-  const { elem, index, provided, classes } = props;
+  //const classesStyles = props.classesStyles;
+  const { elem, index, provided, classesStyles } = props;
+  //const classesStyles = useStyles();
   const deleteTodo = (id) => {
     props.deleteTodo(id);
   };
@@ -45,12 +51,14 @@ export default function DragComponent(props) {
                 ></Checkbox>
               </TableCell>
               <TableCell
-                className={elem.completed ? classes.todoTextCompleted : ""}
+                 class = {elem.completed ? "MuiTableCell-root MuiTableCell-body makeStyles-todoTextCompleted-5"  : ""}
+                 styles={elem.completed ? classesStyles.todoTextCompleted : ""}
               >
                 {elem.todoText}
               </TableCell>
               <TableCell
-                className={elem.completed ? classes.todoTextCompleted : ""}
+                // class = {elem.completed ? "MuiTableCell-root MuiTableCell-body makeStyles-todoTextCompleted-5"  : ""}
+                styles={elem.completed ? "makeStyles-todoTextCompleted-5" : ""}
               >
                 {elem.dueDate}
               </TableCell>

@@ -1,4 +1,4 @@
-import useStyles from "./styles";
+import useStyles from "../styles/styles";
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -18,7 +18,6 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DragComponent from "./DragComponent";
 import Form from './FormComponent';
-import TrelloLike from "./TrelloLike";
 const { v4: generateId } = require("uuid");
 
 

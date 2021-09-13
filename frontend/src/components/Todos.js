@@ -17,6 +17,9 @@ import {
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DragComponent from "./DragComponent";
+import Form from './FormComponent';
+import TrelloLike from "./TrelloLike";
+const { v4: generateId } = require("uuid");
 
 
 function Todos(props) {
@@ -314,76 +317,20 @@ function Todos(props) {
         
         
         <Paper className={classesStyles.addTodoContainer}>
-          <form className={classesStyles.form}>
-            <Box display="flex">
-              <Box flexGrow={2}>
-                <TextField
-                  name="todoText"
-                  //fullWidth
-                  className={classesStyles.textField}
-                  placeholder="task .."
-                  value={newTodoText.todoText}
-                  getByLabelText
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      addTodo(newTodoText);
-                    }
-                  }}
-                  onChange={(event) => {
-                      setErrorText(false)
-                      setTextErrorMsg('')
-                      setNewTodoText({
-                        ...newTodoText,
-                        [event.target.name]: event.target.value,
-                      })
-                    }
-                  }
-                  inputProps={{ "data-testid": "todo-text" }}
 
-                  error={errorText}
-                  id="outlined-error-helper-text"
-                  helperText={textErrorMsg}
-                />
-
-                <TextField
-                  //fullWidth
-                  className={classesStyles.textField}
-                  name="dueDate"
-                  placeholder="due date .."
-                  type="date"
-                  value={newTodoText.dueDate}
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      addTodo(newTodoText);
-                    }
-                  }}
-                  onChange={(event) => {
-                    setErrorDate(false)
-                    setDateErrorMsg('')
-                    setNewTodoText({
-                      ...newTodoText,
-                      [event.target.name]: event.target.value,
-                    })
-                  }
-                    
-                  }
-                  inputProps={{ "data-testid": "todo-duedate" }}
-
-                  error = {errorDate}
-                  id="outlined-error-helper-text"
-                  helperText={dateErrorMsg}
-                />
-              </Box>
-              <Button
-                className={classesStyles.addTodoButton}
-                startIcon={<Icon>add</Icon>}
-                onClick={() => addTodo(newTodoText)}
-                data-testid="add-todo-test"
-              >
-                Adds
-              </Button>
-            </Box>
-          </form>
+          <Form 
+           classesStyles={classesStyles}
+           addTodo={addTodo}
+           newTodoText={newTodoText} 
+           setErrorText={setErrorText}
+           setTextErrorMsg={setTextErrorMsg} 
+           setNewTodoText={setNewTodoText} 
+           errorText={errorText} 
+           textErrorMsg={textErrorMsg} 
+           setErrorDate={setErrorDate} 
+           setDateErrorMsg={setDateErrorMsg} 
+           dateErrorMsg={dateErrorMsg}
+           errorDate={errorDate}/>
           <Box display="flex">
             <Box flexGrow={2}>
               <FormControlLabel
@@ -432,6 +379,7 @@ function Todos(props) {
                             provided={provided}
                             classes={classesStyles}
                             deleteTodo={deleteTodo}
+                            toggleTodoCompleted={toggleTodoCompleted}
                           />
                           // <div id={index}>{JSON.stringify(elem)}</div>
                         );

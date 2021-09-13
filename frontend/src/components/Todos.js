@@ -11,6 +11,7 @@ import {
   Box,
   FormControlLabel,
   TextField,
+  Grid,
 } from "@material-ui/core";
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -256,36 +257,42 @@ function Todos(props) {
       }
     >
       <Container maxWidth="md">
-        <Typography variant="h3" component="h1" gutterBottom>
-          Todos
-        </Typography>
-        <Paper>
-        <TextField
-                //fullWidth
-                className={classesStyles.textField}
-                placeholder="search task"
-                value={newTodoText.dueDate}
-                onKeyPress={(event) => {
-                  if (event.key === "Enter") {
-                    addTodo(newTodoText);
-                  }
-                }}
-                onChange={(event) =>
-                  setNewTodoText({
-                    ...newTodoText,
-                    [event.target.name]: event.target.value,
-                  })
-                }
-              />
-              <Button
-                className={classesStyles.addTodoButton}
-                startIcon={<Icon>search</Icon>}
-                onClick={() => addTodo(newTodoText)}
-                data-testid="add-todo-test"
-              >
-                Seach Tasks
-              </Button>
-        </Paper>
+        <Grid container component="main">
+          <Grid item xs={false} sm={4} md={7} >
+            <Typography variant="h3" component="h1" gutterBottom>
+              Todos
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={8} md={5} elevation={1} className="mt-3" >
+            <TextField
+                    //fullWidth
+                    className={classesStyles.textField}
+                    placeholder="search task"
+                    value={newTodoText.dueDate}
+                    onKeyPress={(event) => {
+                      if (event.key === "Enter") {
+                        addTodo(newTodoText);
+                      }
+                    }}
+                    onChange={(event) =>
+                      setNewTodoText({
+                        ...newTodoText,
+                        [event.target.name]: event.target.value,
+                      })
+                    }
+                  />
+                  <Button
+                    className={classesStyles.addTodoButton}
+                    startIcon={<Icon>search</Icon>}
+                    onClick={() => addTodo(newTodoText)}
+                    data-testid="add-todo-test"
+                  >
+                    Seach Tasks
+                  </Button>
+          </Grid>
+        </Grid>
+        
+        
         <Paper className={classesStyles.addTodoContainer}>
           <form className={classesStyles.form}>
             <Box display="flex">

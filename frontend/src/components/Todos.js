@@ -28,6 +28,11 @@ function Todos(props) {
   const [newTodoText, setNewTodoText] = useState({});
   const [hasMore, setHasMore] = useState(props.hasMore);
   const [page, setPage] = useState(0);
+  const [errorText, setErrorText] = useState(false);
+  const [textErrorMsg, setTextErrorMsg] = useState('');
+  const [errorDate, setErrorDate] = useState(false);
+  const [dateErrorMsg, setDateErrorMsg] = useState('');
+  
   const searchName = useRef();
 
   let URL;
@@ -45,6 +50,23 @@ function Todos(props) {
   }, []);
 
   async function addTodo(text) {
+    if(!text.todoText) {
+      setErrorText(true)
+      setTextErrorMsg('Please fill in the blank')
+      return;
+    }else{
+      setErrorText(false)
+      setTextErrorMsg('')
+    }
+
+    if(!text.dueDate) {
+      setErrorDate(true)
+      setDateErrorMsg('Please fill in the blank')
+      return;
+    }else{
+      setErrorDate(false)
+      setDateErrorMsg('')
+    }
     if (!text.todoText || !text.dueDate) {
       alert("validation enter task and duedate");
       return;
@@ -298,6 +320,7 @@ function Todos(props) {
             <Box display="flex">
               <Box flexGrow={2}>
                 <TextField
+                  name="todoText"
                   //fullWidth
                   className={classesStyles.textField}
                   placeholder="task .."
@@ -308,18 +331,26 @@ function Todos(props) {
                       addTodo(newTodoText);
                     }
                   }}
-                  onChange={(event) =>
-                    setNewTodoText({
-                      ...newTodoText,
-                      [event.target.name]: event.target.value,
-                    })
+                  onChange={(event) => {
+                      setErrorText(false)
+                      setTextErrorMsg('')
+                      setNewTodoText({
+                        ...newTodoText,
+                        [event.target.name]: event.target.value,
+                      })
+                    }
                   }
                   inputProps={{ "data-testid": "todo-text" }}
+
+                  error={errorText}
+                  id="outlined-error-helper-text"
+                  helperText={textErrorMsg}
                 />
 
                 <TextField
                   //fullWidth
                   className={classesStyles.textField}
+                  name="dueDate"
                   placeholder="due date .."
                   type="date"
                   value={newTodoText.dueDate}
@@ -328,13 +359,21 @@ function Todos(props) {
                       addTodo(newTodoText);
                     }
                   }}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    setErrorDate(false)
+                    setDateErrorMsg('')
                     setNewTodoText({
                       ...newTodoText,
                       [event.target.name]: event.target.value,
                     })
                   }
+                    
+                  }
                   inputProps={{ "data-testid": "todo-duedate" }}
+
+                  error = {errorDate}
+                  id="outlined-error-helper-text"
+                  helperText={dateErrorMsg}
                 />
               </Box>
               <Button

@@ -1,4 +1,4 @@
-import useStyles from "./styles";
+import useStyles from "../styles/styles";
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -16,8 +16,6 @@ import {
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DragComponent from "./DragComponent";
-import TrelloLike from "./TrelloLike";
-const { v4: generateId } = require("uuid");
 
 
 function Todos(props) {
@@ -265,11 +263,6 @@ function Todos(props) {
                 className={classesStyles.textField}
                 placeholder="search task"
                 value={newTodoText.dueDate}
-                onKeyPress={(event) => {
-                  if (event.key === "Enter") {
-                    addTodo(newTodoText);
-                  }
-                }}
                 onChange={(event) =>
                   setNewTodoText({
                     ...newTodoText,
@@ -296,11 +289,6 @@ function Todos(props) {
                   placeholder="task .."
                   value={newTodoText.todoText}
                   getByLabelText
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      addTodo(newTodoText);
-                    }
-                  }}
                   onChange={(event) =>
                     setNewTodoText({
                       ...newTodoText,
@@ -316,11 +304,6 @@ function Todos(props) {
                   placeholder="due date .."
                   type="date"
                   value={newTodoText.dueDate}
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      addTodo(newTodoText);
-                    }
-                  }}
                   onChange={(event) =>
                     setNewTodoText({
                       ...newTodoText,
@@ -388,7 +371,6 @@ function Todos(props) {
                             provided={provided}
                             classes={classesStyles}
                             deleteTodo={deleteTodo}
-                            toggleTodoCompleted={toggleTodoCompleted}
                           />
                           // <div id={index}>{JSON.stringify(elem)}</div>
                         );

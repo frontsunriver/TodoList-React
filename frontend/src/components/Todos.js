@@ -81,7 +81,7 @@ function Todos(props) {
   const pageLimit = props.pageLimit;
 
   useEffect(() => {
-    fetchDataInit();
+    fetchDataInit(pageLimit);
   }, []);
 
   function searchTask(text) {
@@ -103,12 +103,12 @@ function Todos(props) {
     );
     alert(JSON.stringify("search with:[ " + text.searchText + " ]"));
 
-    setTimeout(async()=>{
+    setTimeout(async () => {
       //setSearchTodoText({})await setSearchTodoText({})
       //alert(JSON.stringify(searchTodoText))
-      alert("search finish reload")
-      fetchDataInit()
-    },2000)
+      alert("search finish reload");
+      fetchDataInit();
+    }, 2000);
   }
 
   async function addTodo(text) {
@@ -204,24 +204,16 @@ function Todos(props) {
     setTodos(items);
   }
 
-  async function loadFunc(page = 0, limit = pageLimit) {
-    setPage(page + 1);
-    //setSearchPress(false);
-    setTimeout(() => {
-      //let searchKey = searchName.current.value
-      fetchData(page + 1, limit); //, searchKey, '123');
-    }, 1000);
-  }
-
-  function fetchDataInit(page, limit) {
+  function fetchDataInit(limit) {
     //alert("setSearchTodoText" + JSON.stringify(searchTodoText))
-    setSearchTodoText({})
+    //alert("fetchDataInit"+limit)
+    setSearchTodoText({});
     console.log("fetchDataInit!!!!");
     axios
-      .get(`${URL}/getData`)
+      .get(`${URL}/getData?count=` + 0 + "&limit=" + limit)
       .then((response) => {
         let _todos = response.data;
-        console.log("_todos" + _todos);
+        //console.log("_todos" + _todos);
 
         // when no data immediately finish
         if (_todos.length === 0) {
@@ -230,8 +222,8 @@ function Todos(props) {
           return;
         }
         //alert("todos init " +JSON.stringify(todos)+todos.length+"]")
-        console.log("fetchDataInit" + JSON.stringify(_todos));
-        console.log("hasMore" + hasMore);
+        //console.log("fetchDataInit" + JSON.stringify(_todos));
+        //console.log("hasMore" + hasMore);
         _todos.map((t) => (t.deadLineOver = true));
         setTodos(_todos);
       })
@@ -244,17 +236,47 @@ function Todos(props) {
   }
 
   function fetchData(page, limit) {
+    //alert("fetchData page"+ page + "limit" + limit)
     axios
       .get(`${URL}/getData?count=` + page + "&limit=" + limit)
-      .then((response) => response.data)
+      .then((response) => {
+        return response.data;
+      })
       .then((todoList) => {
-        if (!(todoList.length > 0)) {
+        //alert(JSON.stringify(todoList))
+        if (todoList.length > 0) {
+          //alert(JSON.stringify(todoList));
+          let newTodo = [];
+          for (let t of todoList) {
+            newTodo.push({
+              id: t.id,
+              todoText: t.todoText,
+              dueDate: t.dueDate,
+              completed: t.completed,
+              deadLineOver: true,
+            });
+          }
+         // alert(JSON.stringify(newTodo));
+          setTodos((todos) => [...todos, ...newTodo]);
+          //console.log(todos)
+          setHasMore(true);
+        } else {
           setHasMore(false);
         }
       })
       .finally(() => {
-        setHasMore(false);
+        // setHasMore(more);
       });
+  }
+
+  async function loadFunc(page = 0, limit = pageLimit) {
+    // alert("loadFunc page" + page)
+    setPage(page + 1);
+    //setSearchPress(false);
+    setTimeout(() => {
+      //let searchKey = searchName.current.value
+      fetchData(page + 1, limit); //, searchKey, '123');
+    }, 1000);
   }
 
   async function filterTaskUntilToday(event) {
@@ -278,9 +300,6 @@ function Todos(props) {
             nowDate.getMonth(),
             nowDate.getDate()
           );
-        console.log("deadlineover=========" + deadLineOver);
-        console.log("deadlineover=========" + deadLineOver);
-        console.log("deadlineover=========" + deadLineOver);
         // deadline is over or today
         if (deadLineOver) {
           elem.deadLineOver = true;
@@ -378,7 +397,7 @@ function Todos(props) {
               startIcon={<Icon>search</Icon>}
               onClick={() => {
                 searchTask(searchTodoText);
-               // setSearchTodoText("");
+                // setSearchTodoText("");
               }}
               data-testid="search-todo-test"
             >

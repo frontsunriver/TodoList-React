@@ -6,7 +6,7 @@ ReactDOM.render(
   <React.StrictMode>
     <CssBaseline />
     {/* <TrelloLike></TrelloLike> */}
-    <Todos />
+    <Todos  pageLimit="4" hasMore={true}/>
   </React.StrictMode>,
   document.getElementById("root")
 );

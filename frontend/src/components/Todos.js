@@ -18,40 +18,37 @@ import {
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DragComponent from "./DragComponent";
-import TodoForm from './ToDoFormComponent';
+import TodoForm from "./ToDoFormComponent";
 const { v4: generateId } = require("uuid");
 
-
-
 const useStyles = makeStyles({
-    addTodoContainer: { padding: 10 },
-    addTodoButton: { marginLeft: 5 },
-    todosContainer: { marginTop: 10, padding: 10 },
-    todoContainer: {
-      borderTop: "1px solid #bfbfbf",
-      marginTop: 5,
-      "&:first-child": {
-        margin: 0,
-        borderTop: "none",
+  addTodoContainer: { padding: 10 },
+  addTodoButton: { marginLeft: 5 },
+  todosContainer: { marginTop: 10, padding: 10 },
+  todoContainer: {
+    borderTop: "1px solid #bfbfbf",
+    marginTop: 5,
+    "&:first-child": {
+      margin: 0,
+      borderTop: "none",
+    },
+    "&:hover": {
+      "& $deleteTodo": {
+        visibility: "visible",
       },
-      "&:hover": {
-        "& $deleteTodo": {
-          visibility: "visible",
-        },
-      },
     },
-    todoTextCompleted: {
-      textDecoration: "line-through",
-    },
-    textField: {
-      marginLeft: 10,
-      marginRight: 10,
-    },
-    deleteTodo: {
-      visibility: "hidden",
-    },
-  });
-
+  },
+  todoTextCompleted: {
+    textDecoration: "line-through",
+  },
+  textField: {
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  deleteTodo: {
+    visibility: "hidden",
+  },
+});
 
 function Todos(props) {
   const classesStyles = useStyles();
@@ -61,11 +58,16 @@ function Todos(props) {
   const [searchTodoText, setSearchTodoText] = useState({});
   const [hasMore, setHasMore] = useState(props.hasMore);
   const [page, setPage] = useState(0);
-  const [errorText, setErrorText] = useState(false);
-  const [textErrorMsg, setTextErrorMsg] = useState('');
+
+  const [errorAddText, setErrorAddText] = useState(false);
+  const [textAddErrorMsg, setTextAddErrorMsg] = useState("");
+
   const [errorDate, setErrorDate] = useState(false);
-  const [dateErrorMsg, setDateErrorMsg] = useState('');
-  
+  const [dateErrorMsg, setDateErrorMsg] = useState("");
+
+  const [errorSearchext, setErrorSearchText] = useState(false);
+  const [textSearchErrorMsg, setTextSearchErrorMsg] = useState("");
+
   const searchName = useRef();
 
   let URL;
@@ -82,37 +84,50 @@ function Todos(props) {
     fetchDataInit();
   }, []);
 
-
-  function searchTask(text){
-    if(!text){ 
-      setErrorText(true)
-      setTextErrorMsg('Please fill in the search text')
-      return 
-    }else{
-      setErrorText(false)
-      setTextErrorMsg('')
+  function searchTask(text) {
+    if (!text.searchText) {
+      //alert("please fill in search text")
+      setErrorSearchText(true);
+      setTextSearchErrorMsg("Please fill in the search text");
+      return;
+    } else {
+      setErrorSearchText(false);
+      setTextSearchErrorMsg("");
     }
-    alert(JSON.stringify(text))
+    setTodos(
+      todos.filter((todo) => {
+        // alert(JSON.stringify(todo));
+        alert(todo.todoText.includes(text.searchText));
+        return todo.todoText.includes(text.searchText);
+      })
+    );
+    alert(JSON.stringify("search with:[ " + text.searchText + " ]"));
+
+    setTimeout(async()=>{
+      //setSearchTodoText({})await setSearchTodoText({})
+      //alert(JSON.stringify(searchTodoText))
+      alert("search finish reload")
+      fetchDataInit()
+    },2000)
   }
 
   async function addTodo(text) {
-    alert(JSON.stringify(text))
-    if(!text.todoText) {
-      setErrorText(true)
-      setTextErrorMsg('Please fill in the blank')
+    if (!text.todoText) {
+      setErrorAddText(true);
+      setTextAddErrorMsg("Please fill in todo text");
       return;
-    }else{
-      setErrorText(false)
-      setTextErrorMsg('')
+    } else {
+      setErrorAddText(false);
+      setTextAddErrorMsg("");
     }
 
-    if(!text.dueDate) {
-      setErrorDate(true)
-      setDateErrorMsg('Please fill in the blank')
+    if (!text.dueDate) {
+      setErrorDate(true);
+      setDateErrorMsg("Please select the due date");
       return;
-    }else{
-      setErrorDate(false)
-      setDateErrorMsg('')
+    } else {
+      setErrorDate(false);
+      setDateErrorMsg("");
     }
     if (!text.todoText || !text.dueDate) {
       alert("validation enter task and duedate");
@@ -199,6 +214,8 @@ function Todos(props) {
   }
 
   function fetchDataInit(page, limit) {
+    //alert("setSearchTodoText" + JSON.stringify(searchTodoText))
+    setSearchTodoText({})
     console.log("fetchDataInit!!!!");
     axios
       .get(`${URL}/getData`)
@@ -328,58 +345,63 @@ function Todos(props) {
     >
       <Container maxWidth="md">
         <Grid container component="main">
-          <Grid item xs={false} sm={4} md={7} >
+          <Grid item xs={false} sm={4} md={7}>
             <Typography variant="h3" component="h1" gutterBottom>
               Todos
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={8} md={5} elevation={1} className="mt-3" >
+          <Grid item xs={12} sm={8} md={5} elevation={1} className="mt-3">
             <TextField
-                    //fullWidth
-                    className={classesStyles.textField}
-                    placeholder="search task"
-                    onKeyPress={(event) => {
-                      if (event.key === "Enter") {
-                        searchTask(searchTodoText);
-                      }
-                    }}
-                    onChange={(event) =>{
-                        setErrorText(false)
-                        setTextErrorMsg('')
-                        setSearchTodoText({
-                          ...searchTodoText,
-                          [event.target.name]: event.target.value,
-                        })
-                      }
-                    }
-                  />
-                  <Button
-                    // className={classesStyles.addTodoButton}
-                    startIcon={<Icon>search</Icon>}
-                    onClick={() => searchTask(searchTodoText)}
-                    data-testid="search-todo-test"
-                  >
-                    Seach Tasks
-                  </Button>
+              //fullWidth
+              className={classesStyles.textField}
+              placeholder="search task"
+              name="searchText"
+              value={searchTodoText.text}
+              onKeyPress={(event) => {
+                if (event.key === "Enter") {
+                  searchTask(searchTodoText);
+                }
+              }}
+              onChange={(event) => {
+                setErrorSearchText(false);
+                setTextSearchErrorMsg("");
+                setSearchTodoText({
+                  ...searchTodoText,
+                  [event.target.name]: event.target.value,
+                });
+              }}
+              error={errorSearchext}
+              helperText={textSearchErrorMsg}
+            />
+            <Button
+              // className={classesStyles.addTodoButton}
+              startIcon={<Icon>search</Icon>}
+              onClick={() => {
+                searchTask(searchTodoText);
+               // setSearchTodoText("");
+              }}
+              data-testid="search-todo-test"
+            >
+              Seach Tasks
+            </Button>
           </Grid>
         </Grid>
-        
-        
-        <Paper className={classesStyles.addTodoContainer}>
 
-          <TodoForm 
-           classesStyles={classesStyles}
-           addTodo={addTodo}
-           newTodoText={newTodoText} 
-           setErrorText={setErrorText}
-           setTextErrorMsg={setTextErrorMsg} 
-           setNewTodoText={setNewTodoText} 
-           errorText={errorText} 
-           textErrorMsg={textErrorMsg} 
-           setErrorDate={setErrorDate} 
-           setDateErrorMsg={setDateErrorMsg} 
-           dateErrorMsg={dateErrorMsg}
-           errorDate={errorDate}/>
+        <Paper className={classesStyles.addTodoContainer}>
+          <TodoForm
+            classesStyles={classesStyles}
+            addTodo={addTodo}
+            newTodoText={newTodoText}
+            setErrorText={setErrorAddText}
+            setTextErrorMsg={setTextAddErrorMsg}
+            setNewTodoText={setNewTodoText}
+            errorText={errorAddText}
+            textErrorMsg={textAddErrorMsg}
+            setErrorDate={setErrorDate}
+            setDateErrorMsg={setDateErrorMsg}
+            dateErrorMsg={dateErrorMsg}
+            errorDate={errorDate}
+          />
           <Box display="flex">
             <Box flexGrow={2}>
               <FormControlLabel
@@ -397,7 +419,7 @@ function Todos(props) {
             </Box>
           </Box>
         </Paper>
-       
+
         <DragDropContext onDragEnd={handleOnDragEnd} role="test-contents">
           <Droppable droppableId="character">
             {(provided) => (

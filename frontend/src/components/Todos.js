@@ -97,7 +97,7 @@ function Todos(props) {
     setTodos(
       todos.filter((todo) => {
         // alert(JSON.stringify(todo));
-        alert(todo.todoText.includes(text.searchText));
+        //alert(todo.todoText.includes(text.searchText));
         return todo.todoText.includes(text.searchText);
       })
     );

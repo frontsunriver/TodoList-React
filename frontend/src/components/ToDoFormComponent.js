@@ -1,5 +1,7 @@
+//import { makeStyles } from "@material-ui/core/styles";
+
+//import useStyles from "../styles/styles";
 import React from 'react'
-import useStyles from "./styles";
 import {
     Checkbox,
     Container,
@@ -13,7 +15,7 @@ import {
     Grid,
   } from "@material-ui/core";
 
-export default function Form(props) {
+export default function TodoForm(props) {
     const { classesStyles, 
         addTodo, 
         newTodoText, 

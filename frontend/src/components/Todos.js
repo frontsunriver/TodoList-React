@@ -1,5 +1,6 @@
-import useStyles from "../styles/styles";
+// import useStyles from "../styles/styles";
 import React, { useRef, useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import {
   Checkbox,
@@ -17,16 +18,47 @@ import {
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import DragComponent from "./DragComponent";
-import Form from './FormComponent';
-import TrelloLike from "./TrelloLike";
+import TodoForm from './ToDoFormComponent';
 const { v4: generateId } = require("uuid");
 
 
+
+const useStyles = makeStyles({
+    addTodoContainer: { padding: 10 },
+    addTodoButton: { marginLeft: 5 },
+    todosContainer: { marginTop: 10, padding: 10 },
+    todoContainer: {
+      borderTop: "1px solid #bfbfbf",
+      marginTop: 5,
+      "&:first-child": {
+        margin: 0,
+        borderTop: "none",
+      },
+      "&:hover": {
+        "& $deleteTodo": {
+          visibility: "visible",
+        },
+      },
+    },
+    todoTextCompleted: {
+      textDecoration: "line-through",
+    },
+    textField: {
+      marginLeft: 10,
+      marginRight: 10,
+    },
+    deleteTodo: {
+      visibility: "hidden",
+    },
+  });
+
+
 function Todos(props) {
-  const classesStyles = useStyles;
+  const classesStyles = useStyles();
   const [todos, setTodos] = useState([]);
   const [filteredTodosFlag, setFilteredTodosFlag] = useState(false);
   const [newTodoText, setNewTodoText] = useState({});
+  const [searchTodoText, setSearchTodoText] = useState({});
   const [hasMore, setHasMore] = useState(props.hasMore);
   const [page, setPage] = useState(0);
   const [errorText, setErrorText] = useState(false);
@@ -50,7 +82,21 @@ function Todos(props) {
     fetchDataInit();
   }, []);
 
+
+  function searchTask(text){
+    if(!text){ 
+      setErrorText(true)
+      setTextErrorMsg('Please fill in the search text')
+      return 
+    }else{
+      setErrorText(false)
+      setTextErrorMsg('')
+    }
+    alert(JSON.stringify(text))
+  }
+
   async function addTodo(text) {
+    alert(JSON.stringify(text))
     if(!text.todoText) {
       setErrorText(true)
       setTextErrorMsg('Please fill in the blank')
@@ -118,6 +164,7 @@ function Todos(props) {
         completed: !todos.find((todo) => todo.id === id).completed,
       })
       .then(() => {
+        //alert("completed")
         const newTodos = [...todos];
         const modifiedTodoIndex = newTodos.findIndex((todo) => todo.id === id);
         newTodos[modifiedTodoIndex] = {
@@ -291,24 +338,26 @@ function Todos(props) {
                     //fullWidth
                     className={classesStyles.textField}
                     placeholder="search task"
-                    value={newTodoText.dueDate}
                     onKeyPress={(event) => {
                       if (event.key === "Enter") {
-                        addTodo(newTodoText);
+                        searchTask(searchTodoText);
                       }
                     }}
-                    onChange={(event) =>
-                      setNewTodoText({
-                        ...newTodoText,
-                        [event.target.name]: event.target.value,
-                      })
+                    onChange={(event) =>{
+                        setErrorText(false)
+                        setTextErrorMsg('')
+                        setSearchTodoText({
+                          ...searchTodoText,
+                          [event.target.name]: event.target.value,
+                        })
+                      }
                     }
                   />
                   <Button
-                    className={classesStyles.addTodoButton}
+                    // className={classesStyles.addTodoButton}
                     startIcon={<Icon>search</Icon>}
-                    onClick={() => addTodo(newTodoText)}
-                    data-testid="add-todo-test"
+                    onClick={() => searchTask(searchTodoText)}
+                    data-testid="search-todo-test"
                   >
                     Seach Tasks
                   </Button>
@@ -318,7 +367,7 @@ function Todos(props) {
         
         <Paper className={classesStyles.addTodoContainer}>
 
-          <Form 
+          <TodoForm 
            classesStyles={classesStyles}
            addTodo={addTodo}
            newTodoText={newTodoText} 
@@ -377,7 +426,7 @@ function Todos(props) {
                             elem={elem}
                             index={index}
                             provided={provided}
-                            classes={classesStyles}
+                            classesStyles={classesStyles}
                             deleteTodo={deleteTodo}
                             toggleTodoCompleted={toggleTodoCompleted}
                           />

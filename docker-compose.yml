@@ -30,10 +30,10 @@ services:
       - "3010:3010"
     depends_on:
       - database
-    environment:
-      DATABASE_USER: "root"
-      DATABASE_PASSWORD: "1234"
-      DATABASE_URL : database
+    # environment:
+    #   DATABASE_USER: "root"
+    #   DATABASE_PASSWORD: "1234"
+    #   DATABASE_URL : database
 
   database:
     image: mongo:4.4

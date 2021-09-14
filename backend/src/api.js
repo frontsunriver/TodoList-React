@@ -34,7 +34,7 @@ app.get("/getData", async (req, res) => {
 
   var response;
   if (searchName != null && searchName != "") {
-    response = await todos
+    response = await 
       .find({ todoText: new RegExp(searchName, "i") })
       .skip(Number(count) * Number(limit))
       .limit(Number(limit))

@@ -84,8 +84,9 @@ function Todos(props) {
     fetchDataInit(pageLimit);
   }, []);
 
-  function searchTask(text) {
-    if (!text.searchText) {
+  function searchTask(event) {
+    event.preventDefault()
+    if (!searchTodoText.searchText) {
       //alert("please fill in search text")
       setErrorSearchText(true);
       setTextSearchErrorMsg("Please fill in the search text");
@@ -98,15 +99,16 @@ function Todos(props) {
       todos.filter((todo) => {
         // alert(JSON.stringify(todo));
         //alert(todo.todoText.includes(text.searchText));
-        return todo.todoText.includes(text.searchText);
+        return todo.todoText.includes(searchTodoText.searchText);
       })
     );
-    alert(JSON.stringify("search with:[ " + text.searchText + " ]"));
+    alert(JSON.stringify("search with:[ " + searchTodoText.searchText + " ]"));
 
     setTimeout(async () => {
       //setSearchTodoText({})await setSearchTodoText({})
       //alert(JSON.stringify(searchTodoText))
       alert("search finish reload");
+      setSearchTodoText("");
       fetchDataInit();
     }, 2000);
   }
@@ -375,10 +377,10 @@ function Todos(props) {
               className={classesStyles.textField}
               placeholder="search task"
               name="searchText"
-              value={searchTodoText.text}
+              value={searchTodoText.text} 
               onKeyPress={(event) => {
                 if (event.key === "Enter") {
-                  searchTask(searchTodoText);
+                  searchTask(event);
                 }
               }}
               onChange={(event) => {
@@ -395,8 +397,9 @@ function Todos(props) {
             <Button
               // className={classesStyles.addTodoButton}
               startIcon={<Icon>search</Icon>}
-              onClick={() => {
-                searchTask(searchTodoText);
+              onClick={(event) => {
+                searchTask(event);
+                setSearchTodoText("")
                 // setSearchTodoText("");
               }}
               data-testid="search-todo-test"
@@ -451,17 +454,17 @@ function Todos(props) {
                   <div id>
                     {todos
                       .filter((elem) => {
-                        console.log(
-                          "filtered=======" +
-                            JSON.stringify(elem) +
-                            "過去だけ表示する"
-                        );
+                        // console.log(
+                        //   "filtered=======" +
+                        //     JSON.stringify(elem) +
+                        //     "show due date before today"
+                        // );
                         return elem.deadLineOver;
                       })
                       .map((elem, index) => {
-                        console.log(
-                          JSON.stringify(elem) + "ここ表示されてほしいい!!!!!!!"
-                        );
+                        // console.log(
+                        //   JSON.stringify(elem) + "this is the showing elementt い!!!!!!!"
+                        // );
                         return (
                           <DragComponent
                             elem={elem}
